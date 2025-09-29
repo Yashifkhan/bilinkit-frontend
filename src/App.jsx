@@ -22,6 +22,7 @@ function App() {
         <Route path='/shopkeeper' element={<ShopKeeper></ShopKeeper>}></Route>
         {/* <Route path='/AdminDashboard' element={<AdminDashboard></AdminDashboard>}></Route> */}
         <Route path='/login' element={<Login></Login>}></Route>
+        
       </Routes>
 
       </BrowserRouter>
@@ -39,18 +40,3 @@ export default App
 
 
 
-// CREATE TABLE products (
-//     id INT PRIMARY KEY AUTO_INCREMENT,     
-//     shopkeeper_id INT NOT NULL,           
-//     category_id INT NOT NULL,              
-//     name VARCHAR(150) NOT NULL,          
-//     description TEXT,                    
-//     price DECIMAL(10,2) NOT NULL,        
-//     discount DECIMAL(5,2) DEFAULT 0.00,    
-//     stock INT DEFAULT 1,                
-//     unit VARCHAR(50) DEFAULT 'pcs',      
-//     image_url VARCHAR(255),             
-//     status INT DEFAULT 1,
-//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   
-//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-// );

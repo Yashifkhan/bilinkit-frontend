@@ -233,7 +233,7 @@ const ShopKeeper = () => {
       try {
         setApiLoading(true);
         const resp = await axios.get(`${base_url_products}/getAllProducts`);
-        console.log("resp of api ", resp.data.data);
+        // console.log("resp of api ", resp.data.data);
         setProducts(resp?.data.data);
         setAllProduct(resp?.data.data);
       } catch (error) {
@@ -259,8 +259,8 @@ const ShopKeeper = () => {
       // const resp = await axios.get(`http://localhost:8000/api/v1/products/getProducts/${loginUser?.id}`);
       const resp = await axios.get(`${base_url_products}/getProducts/${loginUser?.id}`);
 
+      console.log("get products only shopkeeper by id", resp);
       setMyProducts(resp.data.data);
-      console.log("get products only shopkeeper by id", resp.data.data);
     } catch (error) {
       console.error("Error fetching products:", error);
       toast.error("Failed to fetch products");
@@ -300,6 +300,7 @@ const ShopKeeper = () => {
   // Handle logout
   const handleLogout = () => {
     navigate("/")
+    toast.success("Logout Successfully")
 
   };
   useEffect(() => {

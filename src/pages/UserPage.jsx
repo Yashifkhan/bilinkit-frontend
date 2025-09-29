@@ -135,6 +135,7 @@ const UserPage = () => {
 
   const handleLogout = () => {
     navigate("/");
+    toast.success("Logout Successfully")
   };
 
   // Add To Cart functions
