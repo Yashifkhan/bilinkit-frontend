@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { MapPin, Home } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import 'leaflet/dist/leaflet.css';
+// import { useMapEvents } from "react-leaflet";
 const base_url_address = import.meta.env.VITE_BASE_URL
 
 const UserAddress = ({ sidebarItems, showSection, loginUser }) => {
@@ -20,14 +23,38 @@ const UserAddress = ({ sidebarItems, showSection, loginUser }) => {
     const [showForm, setShowForm] = useState(false); // controls form display
     const [userSavedAddress, setUserSavedAddress] = useState(null)
 
+
+
+
+  function MapEventsHandler() {
+  useMapEvents({
+    click: async (e) => {
+      console.log("Clicked at:", e.latlng.lat, e.latlng.lng);
+
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`
+        );
+        const data = await res.json();
+        console.log("Address data:", data);
+      } catch (error) {
+        console.error("Error fetching address:", error);
+      }
+    },
+  });
+
+  return null; // ✅ must return null, no UI
+}
+    
+
+
+
+
+
     const fetchAddress = async () => {
-        console.log("hiiiii");
-        
         const resp = await axios.get(`${base_url_address}/api/v1/address/getAddresById/${loginUser.id}`)
         console.log(resp.data);
         setUserSavedAddress(resp.data.data[0])
-        
-
         if (resp?.data?.success === "true") {
             console.log("true function");
             setSavedAddress(resp.data.data[0])
@@ -55,7 +82,7 @@ const UserAddress = ({ sidebarItems, showSection, loginUser }) => {
         e.preventDefault();
         const resp = await axios.post(`${base_url_address}/api/v1/address/addAddress/${loginUser.id}`, formData)
         console.log("****************>>>>", resp.data);
-        
+
         if (resp.data.success === "true") {
             toast.success("Address Saved Successfully")
             // Refresh the address data after saving
@@ -97,7 +124,7 @@ const UserAddress = ({ sidebarItems, showSection, loginUser }) => {
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
                 {sidebarItems.find((item) => item.id === showSection.id)?.label}
             </h2>
-            
+
             {/* Saved Address Card - Show if userSavedAddress exists and has data */}
             {userSavedAddress && (
                 <div className="mb-6 border border-gray-200 rounded-xl p-4 shadow-sm bg-gray-50">
@@ -241,11 +268,33 @@ const UserAddress = ({ sidebarItems, showSection, loginUser }) => {
             {/* Map Modal */}
             {openMapModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-xl w-96 shadow-lg">
+                    <div className="bg-white p-6 rounded-xl w-[500px] shadow-lg">
                         <h3 className="text-xl font-semibold mb-4">Pick your Location</h3>
-                        <div className="h-48 bg-gray-200 flex items-center justify-center rounded-lg">
-                            <p className="text-gray-600">🗺️ Map will be here</p>
+
+                        {/* Map Container */}
+                        <div className="rounded-lg overflow-hidden border">
+                            <MapContainer useMapEvents
+                                center={[29.094303235860714, 75.95325912660536]}
+                                zoom={14}
+                                style={{ height: "300px", width: "100%" }}
+
+                            >
+                                <MapEventsHandler></MapEventsHandler>
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+
+                                <Marker position={[29.094303235860714, 75.95325912660536]}>
+                                    <Popup>
+                                        Branch Point !
+                                    </Popup>
+
+                                </Marker>
+                            </MapContainer>
                         </div>
+
+                        {/* Action buttons */}
                         <div className="flex justify-end mt-4 gap-3">
                             <button
                                 onClick={() => setOpenMapModal(false)}
@@ -263,6 +312,7 @@ const UserAddress = ({ sidebarItems, showSection, loginUser }) => {
                     </div>
                 </div>
             )}
+
         </div>
     );
 };
