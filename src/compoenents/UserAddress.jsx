@@ -22,30 +22,33 @@ const UserAddress = ({ sidebarItems, showSection, loginUser }) => {
     const [savedAddress, setSavedAddress] = useState(null); // final saved address
     const [showForm, setShowForm] = useState(false); // controls form display
     const [userSavedAddress, setUserSavedAddress] = useState(null)
+    const [mapSelectAddress, setMapAddress] = useState(null)
+    const [isEditing, setIsEditing] = useState(false); // ✅ new state
 
 
 
 
-  function MapEventsHandler() {
-  useMapEvents({
-    click: async (e) => {
-      console.log("Clicked at:", e.latlng.lat, e.latlng.lng);
+    function MapEventsHandler() {
+        useMapEvents({
+            click: async (e) => {
+                console.log("Clicked at:", e.latlng.lat, e.latlng.lng);
 
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`
-        );
-        const data = await res.json();
-        console.log("Address data:", data);
-      } catch (error) {
-        console.error("Error fetching address:", error);
-      }
-    },
-  });
+                try {
+                    const res = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`
+                    );
+                    const data = await res.json();
+                    console.log("Address data:", data);
+                    setMapAddress(data.address)
+                } catch (error) {
+                    console.error("Error fetching address:", error);
+                }
+            },
+        });
 
-  return null; // ✅ must return null, no UI
-}
-    
+        return null; // ✅ must return null, no UI
+    }
+
 
 
 
@@ -71,39 +74,76 @@ const UserAddress = ({ sidebarItems, showSection, loginUser }) => {
     };
 
     const handleMapSelect = () => {
+        console.log("map location select", mapSelectAddress);
+        setFormData({
+            landmark: mapSelectAddress.landmark || "null",
+            state: mapSelectAddress.state,
+            country: mapSelectAddress.country,
+            district: mapSelectAddress.state_district,
+            pincode: mapSelectAddress.postcode,
+            sector: mapSelectAddress.secotor || "sector 9-11",
+
+        })
+
+
+
+
         // fake location for demo (replace with real map later)
         setSelectedLocation({ lat: 28.6139, lng: 77.209 });
         setOpenMapModal(false);
         setAddressType("map");
         setShowForm(true);
+
+
+
     };
 
     const handleSubmitAddress = async (e) => {
-        e.preventDefault();
-        const resp = await axios.post(`${base_url_address}/api/v1/address/addAddress/${loginUser.id}`, formData)
-        console.log("****************>>>>", resp.data);
+  e.preventDefault();
 
-        if (resp.data.success === "true") {
-            toast.success("Address Saved Successfully")
-            // Refresh the address data after saving
-            fetchAddress();
-        }
-        setShowForm(false);
-    };
+  try {
+    let resp;
+    if (isEditing) {
+      // ✅ update API
+      resp = await axios.put(
+        `${base_url_address}/api/v1/address/updateAddress/${loginUser.id}`,
+        formData
+      );
+      if (resp.data.success) {
+        toast.success("Address Updated Successfully");
+      }
+    } else {
+      // ✅ add API
+      resp = await axios.post(
+        `${base_url_address}/api/v1/address/addAddress/${loginUser.id}`,
+        formData
+      );
+      if (resp.data.success) {
+        toast.success("Address Saved Successfully");
+      }
+    }
 
-    const handleChangeAddress = () => {
-        setAddressType("manual");
-        setFormData({
-            landmark: "",
-            state: "",
-            country: "",
-            district: "",
-            pincode: "",
-            sector: "",
-        });
-        setSelectedLocation(null);
-        setShowForm(true); // 👈 open manual form directly
-    };
+    fetchAddress();
+    setShowForm(false);
+    setIsEditing(false); // reset after save/update
+  } catch (error) {
+    toast.error("Something went wrong!");
+  }
+};
+ const handleChangeAddress = () => {
+  setAddressType("manual");
+  setFormData({
+    landmark: userSavedAddress?.landmark || "",
+    state: userSavedAddress?.state || "",
+    country: userSavedAddress?.country || "",
+    district: userSavedAddress?.district || "",
+    pincode: userSavedAddress?.pincode || "",
+    sector: userSavedAddress?.sector || "",
+  });
+  setSelectedLocation(null);
+  setIsEditing(true);     // ✅ mark as editing
+  setShowForm(true);      // open manual form
+};
 
     const handleCancelEdit = () => {
         setShowForm(false);
@@ -258,7 +298,7 @@ const UserAddress = ({ sidebarItems, showSection, loginUser }) => {
                                 type="submit"
                                 className="col-span-2 mt-2 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
                             >
-                                Save Address
+                                {isEditing ? "Update Address" : "Save Address"}
                             </button>
                         </form>
                     )}
