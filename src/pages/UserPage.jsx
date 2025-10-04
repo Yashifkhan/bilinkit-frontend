@@ -39,7 +39,7 @@ const UserPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("phonepe")
   const [userSavedAddress, setUserSavedAddress] = useState(null)
   const [profileCard, setProfileCard] = useState(false)
-  const [userOrders,setUserOrders]=useState(null)
+  const [userOrders, setUserOrders] = useState(null)
 
   // Fetch products
   const fetchProducts = async () => {
@@ -88,24 +88,24 @@ const UserPage = () => {
   }, [loginUser]);
 
   // fetch products orderded 
-      const fetchorder=async()=>{
-          const resp=await axios.get(`${base_url_address}/api/v1/orders/getOrdersByUser/${loginUser.id}`)
-          console.log("resp of get orders",resp.data.data);
-          setUserOrders(resp.data.data)
-          if (resp.data.success) {
-          const parsedOrders = resp.data.data.map((order) => ({
-            ...order,
-            delivered_address: JSON.parse(order.delivered_address), // ✅ parse here
-          }));
-          setUserOrders(parsedOrders);
-        }
-      
-          
-      }
-  
-      useEffect(()=>{
-  fetchorder()        
-      },[])
+  const fetchorder = async () => {
+    const resp = await axios.get(`${base_url_address}/api/v1/orders/getOrdersByUser/${loginUser.id}`)
+    console.log("resp of get orders", resp.data.data);
+    setUserOrders(resp.data.data)
+    if (resp.data.success) {
+      const parsedOrders = resp.data.data.map((order) => ({
+        ...order,
+        delivered_address: JSON.parse(order.delivered_address), // ✅ parse here
+      }));
+      setUserOrders(parsedOrders);
+    }
+
+
+  }
+
+  useEffect(() => {
+    fetchorder()
+  }, [])
 
   // Filter and sort products
   useEffect(() => {
@@ -290,8 +290,12 @@ const UserPage = () => {
             </div>
 
             {/* Description */}
-            <p className="text-gray-700 text-sm leading-relaxed">{selectedProduct?.description}</p>
-
+            {
+              selectedProduct.stock < 1 ? <p className='text-red-600 text-sm'>Currently Unavilable (out of stock)</p> :
+                <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                  {selectedProduct.description}
+                </p>
+            }
             {/* Price + Category Badge */}
             <div className="flex justify-between items-center">
               <div>
@@ -345,15 +349,13 @@ const UserPage = () => {
                   Add to Cart
                 </button>
               )}
-
               <button
-                onClick={() => {
-                  buyNow(selectedProduct);
-                  setShowProductDetails(false);
-                }}
-                className="flex-1 bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-all font-semibold shadow-md"
+                disabled={selectedProduct.stock < 1}
+                onClick={() => buyNow(selectedProduct)}
+                className={`flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-600/25 hover:shadow-orange-600/40 
+    ${selectedProduct.stock < 1 ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                Buy Now
+                {selectedProduct.stock < 1 ? "Out of Stock" : "Buy Now"}
               </button>
             </div>
           </div>
@@ -424,6 +426,9 @@ const UserPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {products?.map((product) => {
                     const cartQuantity = getCartItemQuantity(product.id);
+                    // console.log("products stock",product.stock);
+
+
                     return (
                       <div
                         key={product.id}
@@ -455,9 +460,12 @@ const UserPage = () => {
                           </h3>
 
                           {/* Product Description */}
-                          <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-                            {product.description}
-                          </p>
+                          {
+                            product.stock < 1 ? <p className='text-red-600 text-sm'>Currently Unavilable (out of stock)</p> :
+                              <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                                {product.description}
+                              </p>
+                          }
 
                           {/* Price + Category */}
                           <div className="flex justify-between items-center mb-3">
@@ -519,11 +527,14 @@ const UserPage = () => {
                               </button>
                             )}
                             <button
+                              disabled={product.stock < 1}
                               onClick={() => buyNow(product)}
-                              className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-600/25 hover:shadow-orange-600/40"
+                              className={`flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-600/25 hover:shadow-orange-600/40 
+    ${product.stock < 1 ? "opacity-50 cursor-not-allowed" : ""}`}
                             >
-                              Buy Now
+                              {product.stock < 1 ? "Out of Stock" : "Buy Now"}
                             </button>
+
                           </div>
                         </div>
                       </div>
@@ -622,10 +633,10 @@ const UserPage = () => {
 
 
 
-  console.log(userSavedAddress);
+  // console.log(userSavedAddress);
 
 
-console.log("userOrders",userOrders);
+  // console.log("userOrders",userOrders);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -1071,106 +1082,124 @@ console.log("userOrders",userOrders);
 
       {/* Payment Modal */}
       {qr && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Choose Payment Method</h2>
-              <button
-                onClick={() => setQr(false)}
-                className="text-gray-500 hover:text-gray-700 text-xl transition-colors"
-              >
-                ✕
-              </button>
-            </div>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+  <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 border-t-4 border-green-600 transition-transform transform hover:scale-[1.01] duration-300">
+    
+    {/* Header */}
+    <div className="flex justify-between items-center mb-6">
+      <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        💳 Choose Payment Method
+      </h2>
+      <button
+        onClick={() => setQr(false)}
+        className="text-red-500 hover:text-red-600 text-2xl transition-colors"
+      >
+        ✕
+      </button>
+    </div>
 
-            {/* Payment Options */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <button
-                onClick={() => setPaymentMethod("googlepay")}
-                className={`flex flex-col items-center justify-center p-4 rounded-lg border ${paymentMethod === "googlepay"
-                  ? "border-green-500 bg-green-50"
-                  : "border-gray-200 hover:bg-gray-50"
-                  } transition-colors`}
-              >
-                <FaGooglePay />
-                <span className="text-xs font-medium text-gray-700">Google Pay</span>
-              </button>
+    {/* Payment Options */}
+    <div className="grid grid-cols-3 gap-4 mb-6">
+      {/* Google Pay */}
+      <button
+        onClick={() => setPaymentMethod("googlepay")}
+        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${
+          paymentMethod === "googlepay"
+            ? "border-green-500 bg-green-50 text-green-700"
+            : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+        }`}
+      >
+        <FaGooglePay size={28} />
+        <span className="text-xs font-medium mt-1">Google Pay</span>
+      </button>
 
-              <button
-                onClick={() => setPaymentMethod("phonepe")}
-                className={`flex flex-col items-center justify-center p-4 rounded-lg border ${paymentMethod === "phonepe"
-                  ? "border-purple-500 bg-purple-50"
-                  : "border-gray-200 hover:bg-gray-50"
-                  } transition-colors`}
-              >
-                <SiPaytm />
-                <span className="text-xs font-medium text-gray-700">PhonePe</span>
-              </button>
+      {/* PhonePe */}
+      <button
+        onClick={() => setPaymentMethod("phonepe")}
+        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${
+          paymentMethod === "phonepe"
+            ? "border-green-500 bg-green-50 text-green-700"
+            : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+        }`}
+      >
+        <SiPaytm size={28} />
+        <span className="text-xs font-medium mt-1">PhonePe</span>
+      </button>
 
-              <button
-                onClick={() => setPaymentMethod("card")}
-                className={`flex flex-col items-center justify-center p-4 rounded-lg border ${paymentMethod === "card"
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-200 hover:bg-gray-50"
-                  } transition-colors`}
-              >
-                <SiContactlesspayment />
-                <span className="text-xs font-medium text-gray-700">Card</span>
-              </button>
-            </div>
+      {/* Card */}
+      <button
+        onClick={() => setPaymentMethod("card")}
+        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${
+          paymentMethod === "card"
+            ? "border-green-500 bg-green-50 text-green-700"
+            : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+        }`}
+      >
+        <SiContactlesspayment size={28} />
+        <span className="text-xs font-medium mt-1">Card</span>
+      </button>
+    </div>
 
-            {/* QR Code for UPI */}
-            {(paymentMethod === "googlepay" || paymentMethod === "phonepe") && (
-              <div className="mt-6 text-center">
-                <p className="mb-3 text-gray-700 font-medium">Scan QR to Pay</p>
-                <div className="inline-block p-2 bg-white border border-gray-200 rounded-lg shadow-sm">
-                  <img
-                    src="qr.jpg"
-                    alt="QR Code"
-                    className="w-48 h-48"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Card Payment Input */}
-            {paymentMethod === "card" && (
-              <div className="mt-6 space-y-4">
-                <input
-                  type="text"
-                  placeholder="Card Number"
-                  className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                />
-                <div className="flex space-x-3">
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    className="w-1/2 border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                  />
-                  <input
-                    type="text"
-                    placeholder="CVV"
-                    className="w-1/2 border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                  />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Card Holder Name"
-                  className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                />
-              </div>
-            )}
-
-            {/* Confirm Button */}
-            <button
-              onClick={paymentConfirm}
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-medium shadow-md hover:shadow-lg mt-6"
-            >
-              Confirm Payment
-            </button>
-          </div>
+    {/* QR Code for UPI */}
+    {(paymentMethod === "googlepay" || paymentMethod === "phonepe") && (
+      <div className="mt-6 text-center">
+        <p className="mb-3 text-gray-700 font-medium">📱 Scan QR to Pay</p>
+        <div className="inline-block p-3 bg-white border-2 border-green-200 rounded-2xl shadow-md">
+          <img
+            src="qr.jpg"
+            alt="QR Code"
+            className="w-48 h-48 rounded-lg border border-green-100"
+          />
         </div>
+      </div>
+    )}
+
+    {/* Card Payment Input */}
+    {paymentMethod === "card" && (
+      <div className="mt-6 space-y-4">
+        <input
+          type="text"
+          placeholder="Card Number"
+          className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+        />
+        <div className="flex space-x-3">
+          <input
+            type="text"
+            placeholder="MM/YY"
+            className="w-1/2 border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+          />
+          <input
+            type="text"
+            placeholder="CVV"
+            className="w-1/2 border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+          />
+        </div>
+        <input
+          type="text"
+          placeholder="Card Holder Name"
+          className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+        />
+      </div>
+    )}
+
+    {/* Confirm Button */}
+    <button
+      onClick={paymentConfirm}
+      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-md hover:shadow-green-400/40 mt-6"
+    >
+      ✅ Confirm Payment
+    </button>
+
+    {/* Cancel Button */}
+    <button
+      onClick={() => setQr(false)}
+      className="w-full mt-3 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 px-4 rounded-xl hover:from-red-600 hover:to-red-700 transition-all font-semibold shadow-md hover:shadow-red-400/40"
+    >
+      ❌ Cancel
+    </button>
+  </div>
+        </div>
+
       )}
 
 
