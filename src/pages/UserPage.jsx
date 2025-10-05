@@ -107,6 +107,14 @@ const UserPage = () => {
     fetchorder()
   }, [])
 
+
+
+
+  // fetch product in  offer
+  
+  // const resp 
+
+
   // Filter and sort products
   useEffect(() => {
     let result = allProduct || [];
@@ -409,6 +417,11 @@ const UserPage = () => {
                   <option value="price-high">Price: High to Low</option>
                 </select>
               </div>
+            </div>
+
+                  {/* slider offers products  */}
+            <div>
+
             </div>
 
             <div className="p-2 bg-gray-50 min-h-screen">

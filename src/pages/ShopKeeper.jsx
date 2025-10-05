@@ -3,17 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import UserPage from './UserPage';
-import { Home } from 'lucide-react';
-const base_url_products=import.meta.env.VITE_BASE_URL_PRODUCTS
-const base_url_shopkeeper=import.meta.env.REACT_APP_base_url_shopkeeper
+import { Eye, Home } from 'lucide-react';
+const base_url_products = import.meta.env.VITE_BASE_URL_PRODUCTS
+const base_url_shopkeeper = import.meta.env.REACT_APP_base_url_shopkeeper
 
-// import { useNavigate } from "react-router-dom";
 
 const ShopKeeper = () => {
   const navigate = useNavigate();
   const location = useLocation()
   const { loginUser } = location.state || {}
-  // State management
   const [user, setUser] = useState(null);
   const [userStatus, setUserStatus] = useState(1);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -27,7 +25,6 @@ const ShopKeeper = () => {
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [allProduct, setAllProduct] = useState(null);
-  const [showMyProducts, setShowMyProducts] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortOption, setSortOption] = useState("name");
   const [showProductDetails, setShowProductDetails] = useState(false);
@@ -35,18 +32,41 @@ const ShopKeeper = () => {
   const [apiLoading, setApiLoading] = useState(false);
   const [orderStatusFilter, setOrderStatusFilter] = useState("all");
   const [showSection, setShowSection] = useState({ id: "products" })
+  const [checkBoxModal, setCheckBoxModal] = useState(false)
+  const [selectProductForOfferModal,setSelectProductForOfferModal]=useState(false)
+  const [selectProductsForOffer,setSelectProductsForOffer]=useState([])
+  const [offerModalOpen,setOfferModalOpen]=useState(false)
+  const [discount, setDiscount] = useState(0);
+const [offersDate, setOffersDate] = useState({ startDate: "", endDate: "" });
+
+
+
+  // Fetch shopkeeper products
+  async function fetchProducts() {
+    console.log("login user", loginUser.id);
+    try {
+      // const resp = await axios.get(`http://localhost:8000/api/v1/products/getProducts/${loginUser?.id}`);
+      const resp = await axios.get(`${base_url_products}/getProducts/${loginUser?.id}`);
+      console.log("get products only shopkeeper by id", resp);
+      setMyProducts(resp.data.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Failed to fetch products");
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
 
   // Status update function
   const handleToggle = async (product) => {
     try {
       setLoading(true);
-
       const newStatus = product.status === 1 ? 0 : 1;
       // await axios.put(`http://localhost:8000/api/v1/products/updateProductStatus/${product.id}`,{ status: newStatus,});
-      await axios.put(`${base_url_products}/updateProductStatus/${product.id}`,{ status: newStatus,});
-
-
-      // Update local state
+      await axios.put(`${base_url_products}/updateProductStatus/${product.id}`, { status: newStatus, });
       setMyProducts(myProducts.map(p =>
         p.id === product.id ? { ...p, status: newStatus } : p
       ));
@@ -63,19 +83,14 @@ const ShopKeeper = () => {
   // Search and filter logic
   useEffect(() => {
     let result = allProduct || [];
-
-    // Apply search filter
     if (searchValue.trim().length > 0) {
       result = result.filter(product =>
         product.name.toLowerCase().includes(searchValue.toLowerCase())
       );
     }
-
-    // Apply category filter
     if (selectedCategory !== "All") {
       result = result.filter(product => product.category === selectedCategory);
     }
-
     // Apply sorting
     result = [...result].sort((a, b) => {
       if (sortOption === "name") {
@@ -91,96 +106,6 @@ const ShopKeeper = () => {
     setProducts(result);
   }, [searchValue, selectedCategory, sortOption, allProduct]);
 
-  // Mock data for products
-  const mockProducts = [
-    {
-      id: 1,
-      name: "Fresh Apples",
-      price: 150,
-      category: "Fruits",
-      image: "🍎",
-      description: "Fresh red apples from Kashmir",
-      seller: "Kumar Fruits"
-    },
-    {
-      id: 2,
-      name: "Organic Rice",
-      price: 80,
-      category: "Grains",
-      image: "🍚",
-      description: "Premium basmati rice",
-      seller: "Grain Store"
-    },
-    {
-      id: 3,
-      name: "Fresh Milk",
-      price: 60,
-      category: "Dairy",
-      image: "🥛",
-      description: "Pure cow milk",
-      seller: "Dairy Farm"
-    },
-    {
-      id: 4,
-      name: "Tomatoes",
-      price: 40,
-      category: "Vegetables",
-      image: "🍅",
-      description: "Fresh organic tomatoes",
-      seller: "Veggie Store"
-    },
-    {
-      id: 5,
-      name: "Bananas",
-      price: 50,
-      category: "Fruits",
-      image: "🍌",
-      description: "Ripe yellow bananas",
-      seller: "Fresh Fruits Co"
-    },
-    {
-      id: 6,
-      name: "Wheat Flour",
-      price: 45,
-      category: "Grains",
-      image: "🌾",
-      description: "Pure wheat flour",
-      seller: "Mill Store"
-    }
-  ];
-
-  const mockMyProducts = [
-    {
-      id: 1,
-      name: "Premium Cookies",
-      price: 120,
-      category: "Snacks",
-      stock: 50,
-      status: 1,
-      sales: 25,
-      discount: 0
-    },
-    {
-      id: 2,
-      name: "Herbal Tea",
-      price: 200,
-      category: "Beverages",
-      stock: 30,
-      status: 1,
-      sales: 15,
-      discount: 5
-    },
-    {
-      id: 3,
-      name: "Organic Honey",
-      price: 350,
-      category: "Natural Products",
-      stock: 20,
-      status: 1,
-      sales: 8,
-      discount: 10
-    }
-  ];
 
   const mockOrders = [
     {
@@ -229,7 +154,6 @@ const ShopKeeper = () => {
     const checkUserStatus = async () => {
       const mockUser = null;
       setUser(mockUser);
-
       try {
         setApiLoading(true);
         const resp = await axios.get(`${base_url_products}/getAllProducts`);
@@ -239,8 +163,7 @@ const ShopKeeper = () => {
       } catch (error) {
         console.error("Error fetching products:", error);
         toast.error("Failed to load products");
-        setProducts(mockProducts);
-        setAllProduct(mockProducts);
+
       } finally {
         setApiLoading(false);
       }
@@ -251,25 +174,6 @@ const ShopKeeper = () => {
     checkUserStatus();
   }, []);
 
-  // Fetch shopkeeper products
-  async function fetchProducts() {
-    console.log("login user", loginUser.id);
-
-    try {
-      // const resp = await axios.get(`http://localhost:8000/api/v1/products/getProducts/${loginUser?.id}`);
-      const resp = await axios.get(`${base_url_products}/getProducts/${loginUser?.id}`);
-
-      console.log("get products only shopkeeper by id", resp);
-      setMyProducts(resp.data.data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      toast.error("Failed to fetch products");
-    }
-  }
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   // Handle registration
   const handleRegister = (formData) => {
@@ -286,17 +190,6 @@ const ShopKeeper = () => {
     // setUserStatus(0);
   };
 
-  // Handle login
-  // const handleLogin = () => {
-  //   setUser({ name: "John Doe", email: "john@example.com", shopName: "John's Store", phone: "+91 9876543210" });
-  //   setUserStatus(1);
-  // };
-
-  //   const handleLogin = () => {
-  //   setUser({ name: "John Doe", email: "john@example.com", shopName: "John's Store", phone: "+91 9876543210" });
-  //   setUserStatus(1);
-  // };
-
   // Handle logout
   const handleLogout = () => {
     navigate("/")
@@ -304,26 +197,12 @@ const ShopKeeper = () => {
 
   };
   useEffect(() => {
-
     if (userStatus === 2) {
       navigate("/AdminDashboard")
     }
   }, [])
 
   // Handle add product
-  const handleAddProduct = (productData) => {
-    const newProduct = {
-      id: Date.now(),
-      ...productData,
-      price: parseInt(productData.price),
-      stock: parseInt(productData.stock),
-      status: 1,
-      sales: 0
-    };
-    setMyProducts([...myProducts, newProduct]);
-    setShowAddProductModal(false);
-    toast.success("Product added successfully");
-  };
 
   // Handle delete product
   const handleDeleteProduct = (productId) => {
@@ -371,156 +250,8 @@ const ShopKeeper = () => {
     }
   };
 
-  // Register Modal Component
-  const RegisterModal = () => {
-    const [formData, setFormData] = useState({
-      name: '',
-      email: '',
-      phone: '',
-      password_hash: '',
-      shop_name: '',
-      shop_address: '',
-      category: ''
-    });
-
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      if (formData.name && formData.email && formData.phone && formData.shop_name && formData.shop_address && formData.password_hash && formData.category) {
-        try {
-          // const resp = await axios.post(`http://localhost:8000/api/v1/shopKeeper/addShopKeeper`, formData);
-          const resp = await axios.post(`${base_url_shopkeeper}/addShopKeeper`, formData);
-
-          console.log("result of add shop keeper", resp.data);
-          if (resp.data.success) {
-            toast.success("Shop Keeper Approval sent to Admin successfully");
-            handleRegister(formData);
-          } else {
-            toast.error(resp.data.message || "Registration failed");
-          }
-        } catch (err) {
-          console.error(err);
-          toast.error("Server error during registration");
-        }
-      } else {
-        toast.error('Please fill all fields');
-      }
-    };
-
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Register as Shopkeeper</h2>
-            <button
-              onClick={() => setShowRegisterModal(false)}
-              className="text-gray-500 hover:text-gray-700 text-xl transition-colors"
-            >
-              ✕
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                placeholder="Enter your full name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                placeholder="Enter your email"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                placeholder="Enter your phone number"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                value={formData.password_hash}
-                onChange={(e) => setFormData({ ...formData, password_hash: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                placeholder="Enter your password"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
-              <input
-                type="text"
-                value={formData.shop_name}
-                onChange={(e) => setFormData({ ...formData, shop_name: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                placeholder="Enter your shop name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-              <textarea
-                value={formData.shop_address}
-                onChange={(e) => setFormData({ ...formData, shop_address: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                rows="2"
-                placeholder="Enter your shop address"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-              >
-                <option value="">Select Category</option>
-                <option value="grocery">Grocery</option>
-                <option value="electronics">Electronics</option>
-                <option value="fashion">Fashion</option>
-                <option value="food">Food & Beverages</option>
-                <option value="health">Health & Beauty</option>
-                <option value="books">Books & Stationery</option>
-                <option value="home">Home & Garden</option>
-              </select>
-            </div>
-
-            <button
-              onClick={handleSubmit}
-              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all font-medium shadow-md hover:shadow-lg"
-            >
-              Submit Application
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   // Add Product Modal Component
   const AddProductModal = ({ loginUser }) => {
-
-
-
     const [productData, setProductData] = useState({
       shopkeeper_id: loginUser?.id,
       name: '',
@@ -532,11 +263,8 @@ const ShopKeeper = () => {
       image_url: null
     });
 
-    console.log("login user id", loginUser.id);
-
     const handleSubmit = async (e) => {
       console.log("product data ", productData);
-
       e.preventDefault();
       const { shopkeeper_id, name, price, category, description, stock, discount, image_url } = productData;
       if (name && price && category && stock) {
@@ -583,12 +311,6 @@ const ShopKeeper = () => {
         toast.error("Please fill all required fields");
       }
     };
-
-
-    console.log("p", myProducts);
-
-
-
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -925,20 +647,25 @@ const ShopKeeper = () => {
     // { id: 'products', label: 'All Products', icon: '🛍️' },
     { id: 'about', label: 'About', icon: 'ℹ️' }
   ];
-
   // Get unique categories for filter
   const categories = ["All", ...new Set(allProduct?.map(p => p.category) || [])];
 
+const handleApplyOffer = async() => {
+  const ProductsId = selectProductsForOffer.map((product) => product.id);
 
-  // useEffect(() => {
-  //   if (user && userStatus === 0) {
-  //     navigate("/userpage"); // apna User Page route yahan likho
-  //   }
-  // }, [user, userStatus, navigate]);
+  const offerData = {
+    ProductsId,         
+    discount,
+    offersDate,
+    shopkeeper_id: loginUser.id
+  };
 
+  const resp=await axios.post(`${base_url_products}/addOfferProducts`,offerData)
+  console.log("resp of add offer api ",resp.data);
+  
+  
 
-  // console.log("user status", userStatus);
-  // console.log("select value",showSection.id);
+};
 
 
   return (
@@ -1005,9 +732,6 @@ const ShopKeeper = () => {
                     if (item.id === 'addProduct') {
                       setShowAddProductModal(true);
                     }
-                    // else {
-                    //   setActiveTab(item.id);
-                    // }
                   }}
                   className={`w-full flex items-center px-6 py-3 text-left hover:bg-gray-50 transition-colors ${activeTab === item.id ? 'bg-green-50 border-r-2 border-green-500 text-green-600' : 'text-gray-700'}`}
                 >
@@ -1025,7 +749,7 @@ const ShopKeeper = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-800">All Products</h2>
-                    <p className="text-gray-600 mt-1">Browse available products from various sellers</p>
+                    <p className="text-gray-600 mt-1">Manage your inventory and track sales</p>
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -1064,92 +788,109 @@ const ShopKeeper = () => {
 
                 {apiLoading ? (
                   <div className="flex justify-center items-center h-64">
-                    <div className="text-center">
-                      <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
-                      <p className="mt-4 text-gray-600">Loading products...</p>
-                    </div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+                  </div>
+                ) : products.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-64 text-center">
+                    <div className="text-5xl mb-4">🔍</div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">No products found</h3>
+                    <p className="text-gray-600 max-w-md">Try adjusting your search or filter to find what you're looking for.</p>
                   </div>
                 ) : (
                   <div className="p-2 bg-gray-50 min-h-screen">
-                    {products.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center h-64 text-center">
-                        <div className="text-5xl mb-4">🔍</div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">No products found</h3>
-                        <p className="text-gray-600 max-w-md">Try adjusting your search or filter to find what you're looking for.</p>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {products?.map((product) => (
-                          <div
-                            key={product.id}
-                            className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 hover:-translate-y-1 transition-all duration-300 ease-out"
-                          >
-                            <div className="p-4">
-                              {/* Image Container */}
-                              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
-                                <img
-                                  src={`http://localhost:8000${product?.image_url}`}
-                                  alt={product.name || "Product image"}
-                                  className="max-w-24 max-h-24 object-contain group-hover:scale-110 transition-transform duration-300"
-                                />
-                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {products.map(product => (
+                        <div
+                          key={product.id}
+                          className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-green-200/50 hover:-translate-y-1 transition-all duration-300 ease-out"
+                        >
+                          <div className="p-4">
+                            {/* Product Image */}
+                            <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
+                              <img
+                                src={`http://localhost:8000${product.image_url}`}
+                                alt={product.name}
+                                className="max-h-28 object-contain group-hover:scale-110 transition-transform duration-300"
+                              />
+
+                              {/* Quick View Button */}
+                              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration">
+                                <button
+                                  onClick={() => openProductDetails(product)}
+                                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:text-white  bg-red-500 hover:bg-red-600 "
+                                  title="View Details"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </button>
                               </div>
 
-                              {/* Product Name */}
-                              <h3 className="font-bold text-gray-900 mb-2 text-lg leading-tight group-hover:text-blue-600 transition-colors duration-200">
-                                {product.name}
-                              </h3>
 
-                              {/* Description */}
-                              <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-                                {product.description}
-                              </p>
+                            </div>
 
-                              {/* Price and Category */}
-                              <div className="flex justify-between items-center mb-3">
-                                <div className="flex items-center">
-                                  <span className="text-2xl font-bold text-emerald-600">₹{product.price.toLocaleString()}</span>
-                                </div>
-                                <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-100">
-                                  {product.category}
+                            {/* Product Title */}
+                            <h3 className="font-bold text-gray-900 mb-2 text-lg leading-tight group-hover:text-green-600 transition-colors duration-200">
+                              {product.name}
+                            </h3>
+
+                            {/* Product Description */}
+                            <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                              {product.description}
+                            </p>
+
+                            {/* Price + Category */}
+                            <div className="flex justify-between items-center mb-3">
+                              <div className="flex items-center">
+                                <span className="text-2xl font-bold text-green-600">
+                                  ₹{product.price.toLocaleString()}
                                 </span>
                               </div>
+                              <span className="text-xs font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-full border border-green-100">
+                                {product.category}
+                              </span>
+                            </div>
 
-                              {/* Seller Info */}
-                              <div className="text-xs text-gray-500 mb-4 flex items-center">
-                                <svg className="w-3 h-3 mr-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                                </svg>
-                                Sold by: <span className="font-medium text-gray-700 ml-1">{product.shopkeeper_name}</span>
-                              </div>
-
-                              {/* Action Button */}
-                              <button
-                                onClick={() => openProductDetails(product)}
-                                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40"
+                            {/* Seller Info */}
+                            <div className="text-xs text-gray-500 mb-4 flex items-center">
+                              <svg
+                                className="w-3 h-3 mr-1 text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
                               >
-                                View Details
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              Sold by:{" "}
+                              <span className="font-medium text-gray-700 ml-1">
+                                {product.shopkeeper_name}
+                              </span>
+                            </div>
+
+                            {/* Action Buttons - Shopkeeper Edition */}
+                            <div className="flex gap-2">
+                              <button
+                                className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40"
+                                onClick={() => editProduct(product.id)}
+                              >
+                                Add To cart
+                              </button>
+                              <button
+                                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-600/25 hover:shadow-red-600/40"
+                                onClick={() => deleteProduct(product.id)}
+                              >
+                                Buy Now
                               </button>
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
             )}
-
-
-
-
-
-
-
-
-
             {!['products', 'myProducts', 'orders', 'analytics', 'profile', 'about'].includes(activeTab) && (
               <div className="flex items-center justify-center h-64">
                 <div className="text-center">
@@ -1174,122 +915,276 @@ const ShopKeeper = () => {
                   <h2 className="text-2xl font-bold text-gray-800">My Products</h2>
                   <p className="text-gray-600 mt-1">Manage your product inventory</p>
                 </div>
-                <button
-                  onClick={() => setShowAddProductModal(true)}
-                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2.5 rounded-xl shadow hover:from-green-600 hover:to-green-700 transition-all font-medium"
-                >
-                  + Add Product
-                </button>
+                <div className='flex gap-5'>
+                  <button
+                    onClick={() => setShowAddProductModal(true)}
+                    className="bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2.5 rounded-xl shadow hover:from-green-600 hover:to-green-700 transition-all font-medium"
+                  >
+                    + Add Product
+                  </button>
+                  <button
+                    onClick={() => setCheckBoxModal(true)}
+                    className="bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-2.5 rounded-xl shadow hover:from-red-600 hover:to-red-700 transition-all font-medium"
+                  >
+                    Add Offers
+                  </button>
+
+                  {
+                    selectProductForOfferModal && (
+                       <button
+                    onClick={() => setOfferModalOpen(true)}
+                    className="bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-2.5 rounded-xl shadow hover:from-red-600 hover:to-red-700 transition-all font-medium"
+                  >
+                    Apply Offer
+                  </button>
+                    )
+                  }
+
+                </div>
               </div>
 
-              {/* Table Section */}
-              <div className="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                      <tr>
-                        {["Image", "Product", "Price", "Stock", "Discount", "Status", "Actions"].map((heading) => (
-                          <th
-                            key={heading}
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                          >
-                            {heading}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {myProducts?.map((product) => (
-                        <tr key={product?.id} className="hover:bg-gray-50 transition-colors">
-                          {/* Image */}
-                          <td className="px-6 py-2">
-                            <div className="flex justify-center items-center">
-                              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-2 w-[80px] h-[80px] flex items-center justify-center overflow-hidden group">
-                                <img
-                                  src={`http://localhost:8000${product?.image_url}`}
-                                  alt={product?.name || "Product image"}
-                                  className="max-w-[80px] max-h-[80px] object-contain group-hover:scale-110 transition-transform duration-300"
-                                />
-                              </div>
-                            </div>
-                          </td>
 
-                          {/* Product Name + Category */}
-                          <td className="px-6 py-4">
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{product?.name}</div>
-                              <div className="text-xs text-gray-500">{product?.category}</div>
-                            </div>
-                          </td>
+             {/* Apply Offer Modal */}
+{offerModalOpen && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+    <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 border-t-4 border-green-600 animate-fadeIn">
 
-                          {/* Price */}
-                          <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900">
-                            ₹{product?.price}
-                          </td>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-gray-800">🎉 Apply Offer on Products</h2>
+        <button
+          onClick={() => setOfferModalOpen(false)}
+          className="text-red-500 hover:text-red-600 font-bold text-lg"
+        >
+          ✖
+        </button>
+      </div>
 
-                          {/* Stock */}
-                          <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                            {product?.stock}
-                          </td>
+      {/* Discount Input */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
+        <input
+          type="number"
+          value={discount}
+          onChange={(e) => setDiscount(e.target.value)}
+          placeholder="Enter discount percentage"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+        />
+      </div>
 
-                          {/* Discount */}
-                          <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                            {product?.discount}%
-                          </td>
+      {/* Product Preview Section */}
+      <div className="max-h-64 overflow-y-auto border rounded-lg p-3 bg-gray-50">
+        {selectProductsForOffer?.map((product) => {
+          const discountedPrice =
+            product.price - (product.price * discount) / 100;
 
-                          {/* Status */}
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-2 p-2">
-                              <button
-                                onClick={() => handleToggle(product)}
-                                disabled={loading}
-                                className={`px-3 py-1 rounded text-white text-sm font-medium ${product?.status === 1 ? "bg-green-500 hover:bg-green-600" : "bg-gray-500 hover:bg-gray-600"} transition-colors`}
-                              >
-                                {loading ? "Updating..." : product?.status === 1 ? "Active" : "Inactive"}
-                              </button>
-                            </div>
-                          </td>
-
-                          {/* Actions */}
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                            <button
-                              className="text-blue-600 hover:text-blue-800 transition-colors"
-                              onClick={() => openEditModal(product)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteProduct(product.id)}
-                              className="text-red-600 hover:text-red-800 transition-colors"
-                            >
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+          return (
+            <div
+              key={product.id}
+              className="flex items-center justify-between bg-white rounded-lg p-3 mb-2 shadow-sm border border-gray-200"
+            >
+              <div className="flex items-center gap-3">
+                <img
+                  src={`http://localhost:8000${product.image_url}`}
+                  alt={product.name}
+                  className="w-12 h-12 object-contain rounded-lg border"
+                />
+                <div>
+                  <p className="font-medium text-gray-800">{product.name}</p>
+                  <p className="text-xs text-gray-500">Original: ₹{product.price}</p>
                 </div>
+              </div>
 
-                {/* Empty State */}
-                {myProducts.length === 0 && (
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 text-5xl mb-4">📦</div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No products yet</h3>
-                    <p className="text-gray-500 mb-4">
-                      Start by adding your first product to your inventory.
-                    </p>
-                    <button
-                      onClick={() => setShowAddProductModal(true)}
-                      className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2.5 rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-medium"
-                    >
-                      Add Your First Product
-                    </button>
-                  </div>
-                )}
+              <div className="text-right">
+                <p className="font-semibold text-green-600">
+                  ₹{discountedPrice.toFixed(2)}
+                </p>
               </div>
             </div>
+          );
+        })}
+      </div>
+
+      {/* Date Inputs */}
+      <div className="mt-4 grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+          <input
+          onChange={(e)=>setOffersDate({...offersDate,startDate:e.target.value})}
+            type="date"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+          <input
+          onChange={(e)=>setOffersDate({...offersDate, endDate:e.target.value})}
+            type="date"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      {/* Footer Buttons */}
+      <div className="flex justify-end gap-3 mt-6">
+        <button
+          onClick={() => setOfferModalOpen(false)}
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleApplyOffer}
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition"
+        >
+          Apply Offer
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+             {/* Table Section */}
+<div className="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden">
+  <div className="overflow-x-auto">
+    <table className="w-full text-sm">
+      <thead className="bg-gray-50 border-b border-gray-200">
+        <tr>
+          {/* Show checkbox header only when modal active */}
+          {checkBoxModal && (
+            <th className="px-4 py-3">
+              <input type="checkbox" disabled className="opacity-0 cursor-default" />
+            </th>
+          )}
+          {["Image", "Product", "Price", "Stock", "Discount", "Status", "Actions"].map(
+            (heading) => (
+              <th
+                key={heading}
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                {heading}
+              </th>
+            )
+          )}
+        </tr>
+      </thead>
+
+      <tbody className="bg-white divide-y divide-gray-200">
+        {myProducts?.map((product) => (
+          <tr key={product?.id} className="hover:bg-gray-50 transition-colors">
+            {/* ✅ Checkbox Column (only show if modal open) */}
+            {checkBoxModal && (
+              <td className="px-4 py-4 text-center">
+                <input
+                  type="checkbox"
+                  value={selectProductForOfferModal}
+                  onClick={()=>setSelectProductsForOffer((prev)=>[...prev, product])}
+                 onChange={(e) => setSelectProductForOfferModal(e.target.checked)}
+                  className="w-4 h-4 accent-green-500 cursor-pointer"
+                />
+              </td>
+            )}
+
+            {/* Image */}
+            <td className="py-2">
+              <div className="flex justify-center items-center">
+                <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-2 w-[80px] h-[80px] flex items-center justify-center overflow-hidden group">
+                  <img
+                    src={`http://localhost:8000${product?.image_url}`}
+                    alt={product?.name || "Product image"}
+                    className="max-w-[80px] max-h-[80px] object-contain group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+              </div>
+            </td>
+
+            {/* Product Name + Category */}
+            <td className="px-6 py-4">
+              <div>
+                <div className="text-sm font-medium text-gray-900">{product?.name}</div>
+                <div className="text-xs text-gray-500">{product?.category}</div>
+              </div>
+            </td>
+
+            {/* Price */}
+            <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900">
+              ₹{product?.price}
+            </td>
+
+            {/* Stock */}
+            <td className="px-6 py-4 whitespace-nowrap text-gray-900">{product?.stock}</td>
+
+            {/* Discount */}
+            <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+              {product?.discount}%
+            </td>
+
+            {/* Status */}
+            <td className="px-6 py-4 whitespace-nowrap">
+              <div className="flex items-center gap-2 p-2">
+                <button
+                  onClick={() => handleToggle(product)}
+                  disabled={loading}
+                  className={`px-3 py-1 rounded text-white text-sm font-medium ${
+                    product?.status === 1
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-gray-500 hover:bg-gray-600"
+                  } transition-colors`}
+                >
+                  {loading
+                    ? "Updating..."
+                    : product?.status === 1
+                    ? "Active"
+                    : "Inactive"}
+                </button>
+              </div>
+            </td>
+
+            {/* Actions */}
+            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+              <button
+                className="text-blue-600 hover:text-blue-800 transition-colors"
+                onClick={() => openEditModal(product)}
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeleteProduct(product.id)}
+                className="text-red-600 hover:text-red-800 transition-colors"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {/* Empty State */}
+  {myProducts.length === 0 && (
+    <div className="text-center py-12">
+      <div className="text-gray-400 text-5xl mb-4">📦</div>
+      <h3 className="text-lg font-medium text-gray-900 mb-2">No products yet</h3>
+      <p className="text-gray-500 mb-4">
+        Start by adding your first product to your inventory.
+      </p>
+      <button
+        onClick={() => setShowAddProductModal(true)}
+        className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2.5 rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-medium"
+      >
+        Add Your First Product
+      </button>
+    </div>
+  )}
+</div>
+
+            </div>
           }
+
+
+
 
           {/* orders  */}
           {showSection.id === "orders" &&
@@ -1681,20 +1576,12 @@ const ShopKeeper = () => {
               </div>
             </div>
           }
-
-
-
-
         </div>
       }
-
       {/* Modals */}
-      {showRegisterModal && <RegisterModal />}
       {showAddProductModal && <AddProductModal loginUser={loginUser} />}
       {productEditModal && <EditProductModal />}
       {showProductDetails && <ProductDetailsModal />}
-
-
     </div>
   );
 };
