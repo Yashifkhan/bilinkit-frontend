@@ -40,6 +40,7 @@ const UserPage = () => {
   const [userSavedAddress, setUserSavedAddress] = useState(null)
   const [profileCard, setProfileCard] = useState(false)
   const [userOrders, setUserOrders] = useState(null)
+  const [offersProducts, setOffersProducts] = useState(null)
 
   // Fetch products
   const fetchProducts = async () => {
@@ -110,9 +111,17 @@ const UserPage = () => {
 
 
 
-  // fetch product in  offer
-  
-  // const resp 
+  // fetch product for have offer  offer
+
+  const fetchOffersProducts = async () => {
+    const resp = await axios.get(`${base_url_products}/getOffersProducts`)
+    console.log("resp of offers api", resp.data.data);
+    setOffersProducts(resp.data.data)
+
+  }
+  useEffect(() => {
+    fetchOffersProducts()
+  }, [])
 
 
   // Filter and sort products
@@ -419,10 +428,68 @@ const UserPage = () => {
               </div>
             </div>
 
-                  {/* slider offers products  */}
-            <div>
+           {/* Slider Offers Products */}
+<div className="p-4">
+  {offersProducts && offersProducts.length > 0 ? (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {offersProducts.map((p) => (
+        <div
+          key={p.id}
+          className="bg-white rounded-2xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden border border-gray-100"
+        >
+{/* Product Image */}
+<div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center overflow-hidden shadow-sm hover:shadow-md transition duration-300 w-48 h-48 mx-auto">
+  <img
+    src={`http://localhost:8000${p.productsInfo?.image_url}`}
+    alt={p.productsInfo?.name || "Product Image"}
+    className="object-contain w-36 h-36 drop-shadow-md"
+  />
+</div>
 
+
+
+          {/* Product Details */}
+          <div className="p-4">
+            <h3 className="text-lg font-semibold text-green-600">
+              {p.productsInfo.name}
+            </h3>
+
+            <p className="text-gray-600 text-sm mt-1">
+              {p.productsInfo.description}
+            </p>
+
+            <div className="flex justify-between items-center mt-3">
+              <span className="text-gray-800 font-bold">
+                ₹{p.productsInfo.price}
+              </span>
+
+              <span className="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-full font-medium">
+                {p.discount}% OFF
+              </span>
             </div>
+
+            <p className="text-xs text-gray-500 mt-2">
+              Category:{" "}
+              <span className="text-green-500">{p.productsInfo.category}</span>
+            </p>
+
+            <p className="text-xs text-gray-500">
+              Offer valid till:{" "}
+              <span className="text-red-500">
+                {new Date(p.end_date).toLocaleDateString()}
+              </span>
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p className="text-center text-red-500 font-medium">
+      No Product For Offer 😔
+    </p>
+  )}
+</div>
+
 
             <div className="p-2 bg-gray-50 min-h-screen">
               {isLoading ? (
@@ -1096,121 +1163,118 @@ const UserPage = () => {
       {/* Payment Modal */}
       {qr && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-  <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 border-t-4 border-green-600 transition-transform transform hover:scale-[1.01] duration-300">
-    
-    {/* Header */}
-    <div className="flex justify-between items-center mb-6">
-      <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-        💳 Choose Payment Method
-      </h2>
-      <button
-        onClick={() => setQr(false)}
-        className="text-red-500 hover:text-red-600 text-2xl transition-colors"
-      >
-        ✕
-      </button>
-    </div>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 border-t-4 border-green-600 transition-transform transform hover:scale-[1.01] duration-300">
 
-    {/* Payment Options */}
-    <div className="grid grid-cols-3 gap-4 mb-6">
-      {/* Google Pay */}
-      <button
-        onClick={() => setPaymentMethod("googlepay")}
-        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${
-          paymentMethod === "googlepay"
-            ? "border-green-500 bg-green-50 text-green-700"
-            : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
-        }`}
-      >
-        <FaGooglePay size={28} />
-        <span className="text-xs font-medium mt-1">Google Pay</span>
-      </button>
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                💳 Choose Payment Method
+              </h2>
+              <button
+                onClick={() => setQr(false)}
+                className="text-red-500 hover:text-red-600 text-2xl transition-colors"
+              >
+                ✕
+              </button>
+            </div>
 
-      {/* PhonePe */}
-      <button
-        onClick={() => setPaymentMethod("phonepe")}
-        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${
-          paymentMethod === "phonepe"
-            ? "border-green-500 bg-green-50 text-green-700"
-            : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
-        }`}
-      >
-        <SiPaytm size={28} />
-        <span className="text-xs font-medium mt-1">PhonePe</span>
-      </button>
+            {/* Payment Options */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {/* Google Pay */}
+              <button
+                onClick={() => setPaymentMethod("googlepay")}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${paymentMethod === "googlepay"
+                    ? "border-green-500 bg-green-50 text-green-700"
+                    : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+                  }`}
+              >
+                <FaGooglePay size={28} />
+                <span className="text-xs font-medium mt-1">Google Pay</span>
+              </button>
 
-      {/* Card */}
-      <button
-        onClick={() => setPaymentMethod("card")}
-        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${
-          paymentMethod === "card"
-            ? "border-green-500 bg-green-50 text-green-700"
-            : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
-        }`}
-      >
-        <SiContactlesspayment size={28} />
-        <span className="text-xs font-medium mt-1">Card</span>
-      </button>
-    </div>
+              {/* PhonePe */}
+              <button
+                onClick={() => setPaymentMethod("phonepe")}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${paymentMethod === "phonepe"
+                    ? "border-green-500 bg-green-50 text-green-700"
+                    : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+                  }`}
+              >
+                <SiPaytm size={28} />
+                <span className="text-xs font-medium mt-1">PhonePe</span>
+              </button>
 
-    {/* QR Code for UPI */}
-    {(paymentMethod === "googlepay" || paymentMethod === "phonepe") && (
-      <div className="mt-6 text-center">
-        <p className="mb-3 text-gray-700 font-medium">📱 Scan QR to Pay</p>
-        <div className="inline-block p-3 bg-white border-2 border-green-200 rounded-2xl shadow-md">
-          <img
-            src="qr.jpg"
-            alt="QR Code"
-            className="w-48 h-48 rounded-lg border border-green-100"
-          />
-        </div>
-      </div>
-    )}
+              {/* Card */}
+              <button
+                onClick={() => setPaymentMethod("card")}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${paymentMethod === "card"
+                    ? "border-green-500 bg-green-50 text-green-700"
+                    : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+                  }`}
+              >
+                <SiContactlesspayment size={28} />
+                <span className="text-xs font-medium mt-1">Card</span>
+              </button>
+            </div>
 
-    {/* Card Payment Input */}
-    {paymentMethod === "card" && (
-      <div className="mt-6 space-y-4">
-        <input
-          type="text"
-          placeholder="Card Number"
-          className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
-        />
-        <div className="flex space-x-3">
-          <input
-            type="text"
-            placeholder="MM/YY"
-            className="w-1/2 border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
-          />
-          <input
-            type="text"
-            placeholder="CVV"
-            className="w-1/2 border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
-          />
-        </div>
-        <input
-          type="text"
-          placeholder="Card Holder Name"
-          className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
-        />
-      </div>
-    )}
+            {/* QR Code for UPI */}
+            {(paymentMethod === "googlepay" || paymentMethod === "phonepe") && (
+              <div className="mt-6 text-center">
+                <p className="mb-3 text-gray-700 font-medium">📱 Scan QR to Pay</p>
+                <div className="inline-block p-3 bg-white border-2 border-green-200 rounded-2xl shadow-md">
+                  <img
+                    src="qr.jpg"
+                    alt="QR Code"
+                    className="w-48 h-48 rounded-lg border border-green-100"
+                  />
+                </div>
+              </div>
+            )}
 
-    {/* Confirm Button */}
-    <button
-      onClick={paymentConfirm}
-      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-md hover:shadow-green-400/40 mt-6"
-    >
-      ✅ Confirm Payment
-    </button>
+            {/* Card Payment Input */}
+            {paymentMethod === "card" && (
+              <div className="mt-6 space-y-4">
+                <input
+                  type="text"
+                  placeholder="Card Number"
+                  className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                />
+                <div className="flex space-x-3">
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    className="w-1/2 border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                  />
+                  <input
+                    type="text"
+                    placeholder="CVV"
+                    className="w-1/2 border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                  />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Card Holder Name"
+                  className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                />
+              </div>
+            )}
 
-    {/* Cancel Button */}
-    <button
-      onClick={() => setQr(false)}
-      className="w-full mt-3 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 px-4 rounded-xl hover:from-red-600 hover:to-red-700 transition-all font-semibold shadow-md hover:shadow-red-400/40"
-    >
-      ❌ Cancel
-    </button>
-  </div>
+            {/* Confirm Button */}
+            <button
+              onClick={paymentConfirm}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-md hover:shadow-green-400/40 mt-6"
+            >
+              ✅ Confirm Payment
+            </button>
+
+            {/* Cancel Button */}
+            <button
+              onClick={() => setQr(false)}
+              className="w-full mt-3 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 px-4 rounded-xl hover:from-red-600 hover:to-red-700 transition-all font-semibold shadow-md hover:shadow-red-400/40"
+            >
+              ❌ Cancel
+            </button>
+          </div>
         </div>
 
       )}

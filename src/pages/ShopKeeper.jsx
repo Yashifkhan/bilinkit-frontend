@@ -176,19 +176,7 @@ const [offersDate, setOffersDate] = useState({ startDate: "", endDate: "" });
 
 
   // Handle registration
-  const handleRegister = (formData) => {
-    console.log('Registration data:', formData);
-    setShowRegisterModal(false);
-    setUser({
-      name: formData.name,
-      email: formData.email,
-      shopName: formData.shop_name,
-      phone: formData.phone,
-      address: formData.shop_address,
-      category: formData.category
-    });
-    // setUserStatus(0);
-  };
+
 
   // Handle logout
   const handleLogout = () => {
@@ -784,6 +772,11 @@ const handleApplyOffer = async() => {
                       <option value="price-high">Price: High to Low</option>
                     </select>
                   </div>
+                </div>
+
+
+                <div>
+                  <h1>Slider products </h1>
                 </div>
 
                 {apiLoading ? (
