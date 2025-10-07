@@ -298,6 +298,7 @@ const [offersDate, setOffersDate] = useState({ startDate: "", endDate: "" });
       } else {
         toast.error("Please fill all required fields");
       }
+      fetchProducts()
     };
 
     return (
@@ -358,8 +359,8 @@ const [offersDate, setOffersDate] = useState({ startDate: "", endDate: "" });
                 <option value="">Select Category</option>
                 <option value="Fruits">Fruits</option>
                 <option value="Vegetables">Vegetables</option>
-                <option value="Grains">Grains</option>
-                <option value="Dairy">Dairy</option>
+                <option value="Footwear">Footwear</option>
+                <option value="Sports">Sports</option>
                 <option value="Snacks">Snacks</option>
                 <option value="Beverages">Beverages</option>
                 <option value="Electronics">Electronics</option>

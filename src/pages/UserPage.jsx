@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  User, ShoppingCart, Heart, Package, MapPin, CreditCard, Bell, Settings, HelpCircle, LogOut, Search, Star, Plus, Minus, Trash2, Eye
+  User, ShoppingCart, Heart, Package, MapPin, CreditCard, Bell, Settings, HelpCircle, LogOut, Search, Star, Plus, Minus, Trash2, Eye,
+  Tag,
+  ChevronLeft,
+  Calendar,
+  ChevronRight
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -427,68 +431,144 @@ const UserPage = () => {
                 </select>
               </div>
             </div>
-
-           {/* Slider Offers Products */}
-<div className="p-4">
-  {offersProducts && offersProducts.length > 0 ? (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {offersProducts.map((p) => (
-        <div
-          key={p.id}
-          className="bg-white rounded-2xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden border border-gray-100"
-        >
-{/* Product Image */}
-<div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center overflow-hidden shadow-sm hover:shadow-md transition duration-300 w-48 h-48 mx-auto">
-  <img
-    src={`http://localhost:8000${p.productsInfo?.image_url}`}
-    alt={p.productsInfo?.name || "Product Image"}
-    className="object-contain w-36 h-36 drop-shadow-md"
-  />
-</div>
-
-
-
-          {/* Product Details */}
-          <div className="p-4">
-            <h3 className="text-lg font-semibold text-green-600">
-              {p.productsInfo.name}
-            </h3>
-
-            <p className="text-gray-600 text-sm mt-1">
-              {p.productsInfo.description}
-            </p>
-
-            <div className="flex justify-between items-center mt-3">
-              <span className="text-gray-800 font-bold">
-                ₹{p.productsInfo.price}
-              </span>
-
-              <span className="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-full font-medium">
-                {p.discount}% OFF
-              </span>
-            </div>
-
-            <p className="text-xs text-gray-500 mt-2">
-              Category:{" "}
-              <span className="text-green-500">{p.productsInfo.category}</span>
-            </p>
-
-            <p className="text-xs text-gray-500">
-              Offer valid till:{" "}
-              <span className="text-red-500">
-                {new Date(p.end_date).toLocaleDateString()}
-              </span>
-            </p>
-          </div>
+            {/* Slider Offers Products */}
+             <div className="p-4 bg-gradient-to-br from-green-50 via-white to-red-50 min-h-screen">
+      {/* Header Section */}
+      <div className="text-center mb-4">
+        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-green-600 text-white px-4 py-2 rounded-full shadow-lg mb-2">
+          <Tag className="w-4 h-4" />
+          <h2 className="text-xl font-bold">Special Offers</h2>
         </div>
-      ))}
+        <p className="text-gray-600 text-sm">Grab amazing deals before they expire!</p>
+      </div>
+
+      {offersProducts && offersProducts.length > 0 ? (
+        <div className="relative w-5xl max-w-7xl mx-auto">
+          {/* Left Navigation Button */}
+          <button
+            onClick={() => scrollSlider('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full p-2 shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 group"
+            aria-label="Previous products"
+          >
+            <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          </button>
+
+          {/* Products Slider */}
+          <div
+            id="offerSlider"
+            className="flex overflow-x-auto space-x-4 scrollbar-hide scroll-smooth snap-x snap-mandatory px-4 py-2"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {offersProducts.map((p) => {
+              const discountedPrice = (
+                p.productsInfo.price -
+                (p.productsInfo.price * p.discount) / 100
+              ).toFixed(2);
+
+              return (
+                <div
+                  key={p.id}
+                  className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border-2 border-gray-100 hover:border-green-300 min-w-[280px] snap-center transform hover:-translate-y-2"
+                >
+                  {/* Image Container with Gradient Overlay */}
+                  <div className="relative bg-gradient-to-br from-green-50 via-white to-red-50 flex items-center justify-center overflow-hidden h-44">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    <img
+                      src={`http://localhost:8000${p.productsInfo?.image_url}`}
+                      alt={p.productsInfo?.name || 'Product Image'}
+                      className="object-contain w-36 h-36 drop-shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-500"
+                    />
+
+                    {/* Discount Badge */}
+                    <div className="absolute top-2 left-2 bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1 animate-pulse">
+                      <Tag className="w-3 h-3" />
+                      {p.discount}% OFF
+                    </div>
+
+                    {/* Category Badge */}
+                    <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md flex items-center gap-1">
+                      <Package className="w-3 h-3" />
+                      {p.productsInfo.category}
+                    </div>
+                  </div>
+
+                  {/* Product Details */}
+                  <div className="p-3">
+                    <h3 className="text-lg font-bold text-gray-800 truncate mb-1 group-hover:text-green-600 transition-colors">
+                      {p.productsInfo.name}
+                    </h3>
+
+                    <p className="text-gray-600 text-xs leading-relaxed line-clamp-2 mb-2">
+                      {p.productsInfo.description}
+                    </p>
+
+                    {/* Price Section */}
+                    <div className="flex items-end gap-2 mb-2">
+                      <div className="flex flex-col">
+                        <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
+                          ₹{discountedPrice}
+                        </span>
+                        <span className="text-xs text-gray-400 line-through">
+                          ₹{p.productsInfo.price}
+                        </span>
+                      </div>
+                      <div className="ml-auto bg-gradient-to-r from-green-100 to-green-50 text-green-700 px-2 py-1 rounded-lg text-xs font-bold border border-green-200">
+                        Save ₹{(p.productsInfo.price - discountedPrice).toFixed(2)}
+                      </div>
+                    </div>
+
+                    {/* Validity Section */}
+                    <div className="flex items-center gap-1 text-xs bg-gradient-to-r from-red-50 to-pink-50 px-2 py-1 rounded-lg border border-red-100 mb-2">
+                      <Calendar className="w-3 h-3 text-red-500" />
+                      <span className="text-gray-700">Valid till</span>
+                      <span className="font-semibold text-red-600">
+                        {new Date(p.end_date).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </span>
+                    </div>
+
+                    {/* Add to Cart Button */}
+                    <button className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white text-sm font-semibold py-2 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Right Navigation Button */}
+          <button
+            onClick={() => scrollSlider('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full p-2 shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 group"
+            aria-label="Next products"
+          >
+            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <div className="inline-block bg-gradient-to-br from-red-100 to-pink-100 rounded-full p-4 mb-2">
+            <Package className="w-12 h-12 text-red-500" />
+          </div>
+          <p className="text-lg font-semibold text-gray-700 mb-1">
+            No Products Available
+          </p>
+          <p className="text-gray-500 text-sm">Check back soon for exciting offers! 🎉</p>
+        </div>
+      )}
+
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
-  ) : (
-    <p className="text-center text-red-500 font-medium">
-      No Product For Offer 😔
-    </p>
-  )}
-</div>
+
 
 
             <div className="p-2 bg-gray-50 min-h-screen">
@@ -1184,8 +1264,8 @@ const UserPage = () => {
               <button
                 onClick={() => setPaymentMethod("googlepay")}
                 className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${paymentMethod === "googlepay"
-                    ? "border-green-500 bg-green-50 text-green-700"
-                    : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+                  ? "border-green-500 bg-green-50 text-green-700"
+                  : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
                   }`}
               >
                 <FaGooglePay size={28} />
@@ -1196,8 +1276,8 @@ const UserPage = () => {
               <button
                 onClick={() => setPaymentMethod("phonepe")}
                 className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${paymentMethod === "phonepe"
-                    ? "border-green-500 bg-green-50 text-green-700"
-                    : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+                  ? "border-green-500 bg-green-50 text-green-700"
+                  : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
                   }`}
               >
                 <SiPaytm size={28} />
@@ -1208,8 +1288,8 @@ const UserPage = () => {
               <button
                 onClick={() => setPaymentMethod("card")}
                 className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${paymentMethod === "card"
-                    ? "border-green-500 bg-green-50 text-green-700"
-                    : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+                  ? "border-green-500 bg-green-50 text-green-700"
+                  : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
                   }`}
               >
                 <SiContactlesspayment size={28} />
