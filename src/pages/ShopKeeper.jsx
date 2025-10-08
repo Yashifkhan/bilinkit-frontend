@@ -652,7 +652,8 @@ const handleApplyOffer = async() => {
   const resp=await axios.post(`${base_url_products}/addOfferProducts`,offerData)
   console.log("resp of add offer api ",resp.data);
   
-  
+  setOfferModalOpen(false)
+  fetchProducts()
 
 };
 
