@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  User, ShoppingCart, Heart, Package, MapPin, CreditCard, Bell, Settings, HelpCircle, LogOut, Search, Star, Plus, Minus, Trash2, Eye,
-  Tag,
-  ChevronLeft,
-  Calendar,
-  ChevronRight
-} from 'lucide-react';
+import { User, ShoppingCart, Heart, Package, MapPin, CreditCard, Bell, Settings, HelpCircle, LogOut, Search, Star, Plus, Minus, Trash2, Eye, Tag, ChevronLeft, Calendar, ChevronRight } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -45,8 +39,9 @@ const UserPage = () => {
   const [profileCard, setProfileCard] = useState(false)
   const [userOrders, setUserOrders] = useState(null)
   const [offersProducts, setOffersProducts] = useState(null)
-
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectOfferProducts, setSelectOfferProducts] = useState([])
+  const [offersBuyModal, setOffersBuyModal] = useState(false)
   const itemsPerPage = 4;
 
   // Fetch products
@@ -114,9 +109,6 @@ const UserPage = () => {
   useEffect(() => {
     fetchorder()
   }, [])
-
-
-
 
   // fetch product for have offer  offer
 
@@ -215,18 +207,15 @@ const UserPage = () => {
   };
 
   // Buy Now Function 
-  const buyNow = (product,discountedPrice) => {
+  const buyNow = (product, discountedPrice) => {
     const updatedProduct = {
-  ...product, 
-  price: discountedPrice ? discountedPrice : product.price, 
-};
+      ...product, price: discountedPrice ? discountedPrice : product.price,
+    };
 
-console.log("updated product", updatedProduct);
-
-    
+    console.log("updated product", updatedProduct);
 
     setSelectedProduct(product)
-    setBuyItems([{ ...product, quantity: 1 }]);
+    setBuyItems([{ ...product, quantity: 1 }])
     setViewBuyItemModal(true);
   };
 
@@ -277,11 +266,11 @@ console.log("updated product", updatedProduct);
   };
 
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total, item) => total + (Number(item.price) * Number(item.quantity)), 0);
   };
 
   const getBuyTotalPrice = () => {
-    return buyItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return buyItems.reduce((total, item) => total + (Number(item.price) * Number(item.quantity)), 0);
   };
 
   // Product Details Modal Component
@@ -414,6 +403,14 @@ console.log("updated product", updatedProduct);
 
   // Get only 4 items for current view
   const visibleProducts = offersProducts?.slice(currentIndex, currentIndex + itemsPerPage);
+
+
+
+  const offerProductdBuy = () => {
+    console.log("am enter in buy offerducts ection ");
+    setOffersBuyModal(true)
+
+  }
 
   // Render content based on active section
   const renderContent = () => {
@@ -551,9 +548,10 @@ console.log("updated product", updatedProduct);
                             </div>
 
                             {/* Button */}
-    <button className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700
+                            <button className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700
      hover:to-green-600 text-white text-xs font-semibold py-1.5 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-      onClick={() => buyNow(p.productsInfo ,discountedPrice)}>
+                              onClick={() => offerProductdBuy}
+                            >
                               Buy Now
                             </button>
                           </div>
@@ -567,8 +565,8 @@ console.log("updated product", updatedProduct);
                     onClick={() => handleSlide("right")}
                     disabled={currentIndex + itemsPerPage >= offersProducts.length}
                     className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full p-2 shadow-xl transition-all duration-300 group ${currentIndex + itemsPerPage >= offersProducts.length
-                        ? "opacity-30 cursor-not-allowed"
-                        : "hover:shadow-2xl hover:scale-110"
+                      ? "opacity-30 cursor-not-allowed"
+                      : "hover:shadow-2xl hover:scale-110"
                       }`}
                   >
                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -1133,12 +1131,14 @@ console.log("updated product", updatedProduct);
 
       {/* View Buy Now Modal */}
       {viewBuyItemModal && (
+
+
         <div className="fixed inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border-t-4 border-green-600">
 
             {/* Header */}
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-2xl font-bold text-green-700">Buy Now</h2>
+              <h2 className="text-2xl font-bold text-green-700">Buy Now jiiiiii</h2>
               <button
                 onClick={() => setViewBuyItemModal(false)}
                 className="text-red-500 hover:text-red-700 transition text-xl"
@@ -1157,6 +1157,10 @@ console.log("updated product", updatedProduct);
               ) : (
                 <>
                   {buyItems?.map(item => (
+
+
+                    console.log("buy item ", item),
+
                     <div
                       key={item.id}
                       className="flex items-center justify-between p-3 border-b border-gray-200"
@@ -1172,7 +1176,7 @@ console.log("updated product", updatedProduct);
                         </div>
                         <div>
                           <h3 className="font-medium text-gray-800">{item.name}</h3>
-                          <p className="text-sm text-gray-500">₹{item.price} × {item.quantity}</p>
+                          <p className="text-sm text-gray-500">₹ {item.price} × {item.quantity}</p>
                         </div>
                       </div>
 
@@ -1253,6 +1257,261 @@ console.log("updated product", updatedProduct);
                 </>
               )}
             </div>
+
+
+            {/* offers Buy Now  */}
+            {viewBuyItemModal && (
+
+
+              <div className="fixed inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm z-50">
+                <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border-t-4 border-green-600">
+
+                  {/* Header */}
+                  <div className="flex justify-between items-center mb-5">
+                    <h2 className="text-2xl font-bold text-green-700">Buy Now jiiiiii</h2>
+                    <button
+                      onClick={() => setViewBuyItemModal(false)}
+                      className="text-red-500 hover:text-red-700 transition text-xl"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* Items Section */}
+                  <div className="space-y-4">
+                    {buyItems?.length === 0 ? (
+                      <div className="text-center py-8">
+                        <ShoppingCart className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                        <p className="text-gray-500">No items selected</p>
+                      </div>
+                    ) : (
+                      <>
+                        {buyItems?.map(item => (
+
+
+                          console.log("buy item ", item),
+
+                          <div
+                            key={item.id}
+                            className="flex items-center justify-between p-3 border-b border-gray-200"
+                          >
+                            {/* Product Image + Info */}
+                            <div className="flex items-center">
+                              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                                <img
+                                  src={`${base_url_img}${item?.image_url}`}
+                                  alt={item.name || "Product image"}
+                                  className="max-h-12 object-contain"
+                                />
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-gray-800">{item.name}</h3>
+                                <p className="text-sm text-gray-500">₹ {item.price} × {item.quantity}</p>
+                              </div>
+                            </div>
+
+                            {/* Quantity Controls + Price */}
+                            <div className="flex items-center">
+                              <div className="flex items-center mr-4">
+                                <button
+                                  onClick={() => {
+                                    if (item.quantity > 1) {
+                                      setBuyItems(buyItems.map(i =>
+                                        i.id === item.id ? { ...i, quantity: i.quantity - 1 } : i
+                                      ));
+                                    }
+                                  }}
+                                  className="p-1 text-red-500 hover:bg-red-50 rounded-full"
+                                >
+                                  <Minus className="h-4 w-4" />
+                                </button>
+                                <span className="mx-2 font-medium">{item.quantity}</span>
+                                <button
+                                  onClick={() => {
+                                    setBuyItems(buyItems.map(i =>
+                                      i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+                                    ));
+                                  }}
+                                  className="p-1 text-green-500 hover:bg-green-50 rounded-full"
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </button>
+                              </div>
+
+                              <div className="text-right mr-2">
+                                <p className="font-medium text-green-600">
+                                  ₹{item.price * item.quantity}
+                                </p>
+                              </div>
+
+                              {/* Delete single item */}
+                              <button
+                                onClick={() => setBuyItems(buyItems.filter(i => i.id !== item.id))}
+                                className="p-1 text-red-500 hover:bg-red-50 rounded-full"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+
+                        {/* Total Section */}
+                        <div className="flex justify-between items-center pt-4">
+                          <span className="text-lg font-semibold">Total:</span>
+                          <span className="text-xl font-bold text-green-600">
+                            ₹{getBuyTotalPrice()}
+                          </span>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="flex gap-3 mt-4">
+                          {/* Clear All */}
+                          <button
+                            onClick={() => setBuyItems([])}
+                            className="flex-1 bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-all font-semibold shadow-md"
+                          >
+                            Clear All
+                          </button>
+
+                          {/* Pay Now */}
+                          <button
+                            onClick={() => {
+                              setViewBuyItemModal(false);
+                              paymentFunction();
+                            }}
+                            className="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-all font-semibold shadow-md"
+                          >
+                            Pay Now
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+
+                  {offersBuyModal && (
+                    console.log("offersBuyModal", offersBuyModal),
+
+                    <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+                      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 border-t-4 border-green-600 overflow-y-auto max-h-[80vh]">
+
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center mb-4">
+                          <h2 className="text-xl font-semibold text-gray-800">Offer Products</h2>
+                          <button
+                            onClick={() => setOffersBuyModal(false)}
+                            className="text-gray-500 hover:text-red-500"
+                          >
+                            ✕
+                          </button>
+                        </div>
+
+                        {/* Products List */}
+                        {selectOfferProducts?.map((item) => {
+                          // 🧮 Safely convert numeric values
+                          const price = Number(item.price) || 0;
+                          const discount = Number(item.discount) || 0;
+                          const quantity = Number(item.quantity) || 1;
+
+                          // 🧾 Apply discount logic if present
+                          const discountedPrice =
+                            discount > 0 ? price - (price * discount) / 100 : price;
+
+                          // 🧰 Calculate total
+                          const total = discountedPrice * quantity;
+
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex items-center justify-between p-3 border-b border-gray-200"
+                            >
+                              {/* Product Image + Info */}
+                              <div className="flex items-center">
+                                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                                  <img
+                                    src={`${base_url_img}${item?.image_url}`}
+                                    alt={item.name || "Product image"}
+                                    className="max-h-12 object-contain"
+                                  />
+                                </div>
+                                <div>
+                                  <h3 className="font-medium text-gray-800">{item.name}</h3>
+                                  {discount > 0 ? (
+                                    <p className="text-sm text-gray-500">
+                                      <span className="line-through mr-2">₹{price}</span>
+                                      ₹{discountedPrice} × {quantity}
+                                    </p>
+                                  ) : (
+                                    <p className="text-sm text-gray-500">
+                                      ₹{price} × {quantity}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Quantity Controls + Price */}
+                              <div className="flex items-center">
+                                <div className="flex items-center mr-4">
+                                  <button
+                                    onClick={() => {
+                                      if (quantity > 1) {
+                                        setBuyItems(
+                                          buyItems.map((i) =>
+                                            i.id === item.id
+                                              ? { ...i, quantity: quantity - 1 }
+                                              : i
+                                          )
+                                        );
+                                      }
+                                    }}
+                                    className="p-1 text-red-500 hover:bg-red-50 rounded-full"
+                                  >
+                                    <Minus className="h-4 w-4" />
+                                  </button>
+
+                                  <span className="mx-2 font-medium">{quantity}</span>
+
+                                  <button
+                                    onClick={() =>
+                                      setBuyItems(
+                                        buyItems.map((i) =>
+                                          i.id === item.id
+                                            ? { ...i, quantity: quantity + 1 }
+                                            : i
+                                        )
+                                      )
+                                    }
+                                    className="p-1 text-green-500 hover:bg-green-50 rounded-full"
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </button>
+                                </div>
+
+                                <div className="text-right mr-2">
+                                  <p className="font-medium text-green-600">₹{total}</p>
+                                </div>
+
+                                {/* Delete single item */}
+                                <button
+                                  onClick={() =>
+                                    setBuyItems(buyItems.filter((i) => i.id !== item.id))
+                                  }
+                                  className="p-1 text-red-500 hover:bg-red-50 rounded-full"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       )}
