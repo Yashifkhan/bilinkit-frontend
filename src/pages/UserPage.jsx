@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, ShoppingCart, Heart, Package, MapPin, CreditCard, Bell, Settings, HelpCircle, LogOut, Search, Star, Plus, Minus, Trash2, Eye, Tag, ChevronLeft, Calendar, ChevronRight } from 'lucide-react';
+import { User, ShoppingCart, Heart, Package, MapPin, CreditCard, Bell, Settings, HelpCircle, LogOut, Search, Star, Plus, Minus, Trash2, Eye, Tag, ChevronLeft, Calendar, ChevronRight, X } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -42,7 +42,43 @@ const UserPage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectOfferProducts, setSelectOfferProducts] = useState([])
   const [offersBuyModal, setOffersBuyModal] = useState(false)
+  const [selectedOfferProduct, setSelectedOfferProduct] = useState(null)
+  const [quantity, setQuantity] = useState(1);
+  const [viewOffersProductModal, setViewOffersProductModal] = useState(false)
   const itemsPerPage = 4;
+
+
+
+
+  // ✅ base price & discount
+  const price = Number(selectedOfferProduct?.productsInfo?.price || 0);
+  const discount = Number(selectedOfferProduct?.discount || 0);
+  const discountedPrice = price - (price * discount) / 100;
+
+  // ✅ total after quantity
+  const total = (discountedPrice * quantity).toFixed(2);
+
+  // ✅ increment quantity
+  const handleIncrease = () => {
+    setQuantity(prev => prev + 1);
+  };
+
+  // ✅ decrement quantity (minimum 1)
+  const handleDecrease = () => {
+    setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+  };
+
+  // ✅ remove item
+  const handleRemove = () => {
+    setQuantity(1);
+    console.log("Product removed");
+  };
+
+
+
+
+
+
 
   // Fetch products
   const fetchProducts = async () => {
@@ -76,7 +112,7 @@ const UserPage = () => {
 
   // fetch user address 
   const fetchAddress = async () => {
-    const resp = await axios.get(`${base_url_address}/api/v1/address/getAddresById/${loginUser.id}`)
+    const resp = await axios.get(`${base_url_address}/api/v1/address/getAddresById/${loginUser?.id}`)
     if (resp.data.success === true) {
       setUserSavedAddress(resp.data.data[0])
     }
@@ -92,7 +128,7 @@ const UserPage = () => {
 
   // fetch products orderded 
   const fetchorder = async () => {
-    const resp = await axios.get(`${base_url_address}/api/v1/orders/getOrdersByUser/${loginUser.id}`)
+    const resp = await axios.get(`${base_url_address}/api/v1/orders/getOrdersByUser/${loginUser?.id}`)
     console.log("resp of get orders", resp.data.data);
     setUserOrders(resp.data.data)
     if (resp.data.success) {
@@ -387,7 +423,6 @@ const UserPage = () => {
     );
   };
 
-
   // scroll right or left 
   const handleSlide = (direction) => {
     if (direction === "right") {
@@ -406,9 +441,12 @@ const UserPage = () => {
 
 
 
-  const offerProductdBuy = () => {
-    console.log("am enter in buy offerducts ection ");
+  const offerProductdBuy = (p, discountedPrice) => {
     setOffersBuyModal(true)
+    console.log("p--->>>", p, discountedPrice);
+    setSelectedOfferProduct(p)
+
+    console.log("am enter in buy offerducts ection ");
 
   }
 
@@ -549,10 +587,18 @@ const UserPage = () => {
 
                             {/* Button */}
                             <button className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700
-     hover:to-green-600 text-white text-xs font-semibold py-1.5 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                              onClick={() => offerProductdBuy}
+     hover:to-green-600 text-white text-xs font-semibold py-1.5 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 mb-2"
+                              onClick={() => offerProductdBuy(p, discountedPrice)}
                             >
                               Buy Now
+                            </button>
+                            <button className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700
+     hover:to-red-600 text-white text-xs font-semibold py-1.5 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                              onClick={() => {
+                                setViewOffersProductModal(true); setSelectedOfferProduct(p);
+                              }}
+                            >
+                              View Details
                             </button>
                           </div>
                         </div>
@@ -813,6 +859,10 @@ const UserPage = () => {
 
 
   // console.log("userOrders",userOrders);
+
+
+  console.log("viewOffersProductModal", viewOffersProductModal);
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -1268,7 +1318,7 @@ const UserPage = () => {
 
                   {/* Header */}
                   <div className="flex justify-between items-center mb-5">
-                    <h2 className="text-2xl font-bold text-green-700">Buy Now jiiiiii</h2>
+                    <h2 className="text-2xl font-bold text-green-700">Buy Now </h2>
                     <button
                       onClick={() => setViewBuyItemModal(false)}
                       className="text-red-500 hover:text-red-700 transition text-xl"
@@ -1389,124 +1439,6 @@ const UserPage = () => {
                   </div>
 
 
-                  {offersBuyModal && (
-                    console.log("offersBuyModal", offersBuyModal),
-
-                    <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
-                      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 border-t-4 border-green-600 overflow-y-auto max-h-[80vh]">
-
-                        {/* Modal Header */}
-                        <div className="flex justify-between items-center mb-4">
-                          <h2 className="text-xl font-semibold text-gray-800">Offer Products</h2>
-                          <button
-                            onClick={() => setOffersBuyModal(false)}
-                            className="text-gray-500 hover:text-red-500"
-                          >
-                            ✕
-                          </button>
-                        </div>
-
-                        {/* Products List */}
-                        {selectOfferProducts?.map((item) => {
-                          // 🧮 Safely convert numeric values
-                          const price = Number(item.price) || 0;
-                          const discount = Number(item.discount) || 0;
-                          const quantity = Number(item.quantity) || 1;
-
-                          // 🧾 Apply discount logic if present
-                          const discountedPrice =
-                            discount > 0 ? price - (price * discount) / 100 : price;
-
-                          // 🧰 Calculate total
-                          const total = discountedPrice * quantity;
-
-                          return (
-                            <div
-                              key={item.id}
-                              className="flex items-center justify-between p-3 border-b border-gray-200"
-                            >
-                              {/* Product Image + Info */}
-                              <div className="flex items-center">
-                                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
-                                  <img
-                                    src={`${base_url_img}${item?.image_url}`}
-                                    alt={item.name || "Product image"}
-                                    className="max-h-12 object-contain"
-                                  />
-                                </div>
-                                <div>
-                                  <h3 className="font-medium text-gray-800">{item.name}</h3>
-                                  {discount > 0 ? (
-                                    <p className="text-sm text-gray-500">
-                                      <span className="line-through mr-2">₹{price}</span>
-                                      ₹{discountedPrice} × {quantity}
-                                    </p>
-                                  ) : (
-                                    <p className="text-sm text-gray-500">
-                                      ₹{price} × {quantity}
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-
-                              {/* Quantity Controls + Price */}
-                              <div className="flex items-center">
-                                <div className="flex items-center mr-4">
-                                  <button
-                                    onClick={() => {
-                                      if (quantity > 1) {
-                                        setBuyItems(
-                                          buyItems.map((i) =>
-                                            i.id === item.id
-                                              ? { ...i, quantity: quantity - 1 }
-                                              : i
-                                          )
-                                        );
-                                      }
-                                    }}
-                                    className="p-1 text-red-500 hover:bg-red-50 rounded-full"
-                                  >
-                                    <Minus className="h-4 w-4" />
-                                  </button>
-
-                                  <span className="mx-2 font-medium">{quantity}</span>
-
-                                  <button
-                                    onClick={() =>
-                                      setBuyItems(
-                                        buyItems.map((i) =>
-                                          i.id === item.id
-                                            ? { ...i, quantity: quantity + 1 }
-                                            : i
-                                        )
-                                      )
-                                    }
-                                    className="p-1 text-green-500 hover:bg-green-50 rounded-full"
-                                  >
-                                    <Plus className="h-4 w-4" />
-                                  </button>
-                                </div>
-
-                                <div className="text-right mr-2">
-                                  <p className="font-medium text-green-600">₹{total}</p>
-                                </div>
-
-                                {/* Delete single item */}
-                                <button
-                                  onClick={() =>
-                                    setBuyItems(buyItems.filter((i) => i.id !== item.id))
-                                  }
-                                  className="p-1 text-red-500 hover:bg-red-50 rounded-full"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
 
                 </div>
               </div>
@@ -1515,6 +1447,206 @@ const UserPage = () => {
           </div>
         </div>
       )}
+
+
+      {/* ✅ Buy Offers Products Modal */}
+      {offersBuyModal && selectedOfferProduct && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border-t-4 border-green-600 overflow-y-auto max-h-[80vh]">
+
+            {/* Header */}
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-2xl font-semibold text-green-700">Buy Now Offers Products</h2>
+              <button
+                onClick={() => setOffersBuyModal(false)}
+                className="text-red-500 hover:text-red-700"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Product Info */}
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
+              {/* Image + Details */}
+              <div className="flex items-center space-x-4">
+                <img
+                  src={`http://localhost:8000${selectedOfferProduct.productsInfo.image_url}`}
+                  alt={selectedOfferProduct.productsInfo.name}
+                  className="w-16 h-16 object-cover rounded-lg"
+                />
+                <div>
+                  <h3 className="text-gray-800 font-semibold capitalize">
+                    {selectedOfferProduct.productsInfo.name}
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    ₹{price} × {quantity}{" "}
+                    {discount > 0 && (
+                      <span className="ml-1 text-green-600 font-medium">
+                        (-{discount}%)
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              {/* Quantity and Price */}
+              <div className="flex items-center space-x-3">
+                {/* Decrease Quantity */}
+                <button
+                  className="text-red-500 hover:text-red-700"
+                  onClick={handleDecrease}
+                >
+                  <Minus size={18} />
+                </button>
+
+                {/* Quantity Display */}
+                <span className="font-semibold text-gray-800">{quantity}</span>
+
+                {/* Increase Quantity */}
+                <button
+                  className="text-green-600 hover:text-green-800"
+                  onClick={handleIncrease}
+                >
+                  <Plus size={18} />
+                </button>
+
+                {/* Price after discount */}
+                <p className="text-green-600 font-semibold">₹{total}</p>
+
+                {/* Remove Product */}
+                <button className="text-red-500 hover:text-red-700" onClick={handleRemove}>
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Total Section */}
+            <div className="flex justify-between items-center">
+              <p className="text-xl font-semibold text-gray-800">Total:</p>
+              <p className="text-2xl font-bold text-green-700">₹{total}</p>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-between mt-6">
+              <button
+                onClick={() => setQuantity(1)}
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+              >
+                Clear All
+              </button>
+              <button
+                onClick={() => console.log("Pay Now", { product: selectedOfferProduct, quantity, total })}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+              >
+                Pay Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* offers products view  modal  */}
+
+
+   {viewOffersProductModal && selectedOfferProduct && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border-t-4 border-green-600 overflow-y-auto max-h-[80vh] transition-all duration-300">
+      
+      {/* Header */}
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-2xl font-semibold text-green-700">
+          Offer Product Details
+        </h2>
+        <button
+          onClick={() => setViewOffersProductModal(false)}
+          className="text-red-500 hover:text-red-700"
+        >
+          <X size={24} />
+        </button>
+      </div>
+
+      {/* Product Section */}
+      <div className="flex items-center space-x-4 mb-4">
+        <img
+          src={`http://localhost:8000${selectedOfferProduct.productsInfo.image_url}`}
+          alt={selectedOfferProduct.productsInfo.name}
+          className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-sm"
+        />
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 capitalize">
+            {selectedOfferProduct.productsInfo.name}
+          </h3>
+          <p className="text-gray-500 text-sm mt-1">
+            Category:{" "}
+            <span className="font-medium text-gray-700">
+              {selectedOfferProduct.productsInfo.category}
+            </span>
+          </p>
+          <p className="text-gray-500 text-sm">
+            Price:{" "}
+            <span className="font-semibold text-gray-800">
+              ₹{Number(selectedOfferProduct.productsInfo.price)}
+            </span>
+          </p>
+        </div>
+      </div>
+
+      {/* Discount Section */}
+      <div className="bg-green-50 rounded-lg p-3 mb-4 border border-green-200">
+        <p className="text-green-700 font-medium">
+          Discount:{" "}
+          <span className="font-semibold text-green-800">
+            {Number(selectedOfferProduct.discount)}%
+          </span>
+        </p>
+
+        {/* Calculate discounted price */}
+        <p className="text-gray-700 mt-1">
+          Discounted Price:{" "}
+          <span className="text-green-700 font-bold">
+            ₹
+            {(
+              Number(selectedOfferProduct.productsInfo.price) -
+              (Number(selectedOfferProduct.productsInfo.price) *
+                Number(selectedOfferProduct.discount)) /
+                100
+            ).toFixed(2)}
+          </span>
+        </p>
+      </div>
+
+      {/* Description */}
+      <div className="mb-4">
+        <h4 className="text-gray-800 font-semibold mb-2">Description:</h4>
+        <p className="text-gray-600 text-sm leading-relaxed">
+          {selectedOfferProduct.productsInfo.description ||
+            "No description available."}
+        </p>
+      </div>
+
+      {/* Actions */}
+      <div className="flex justify-end space-x-3 mt-6">
+        <button
+          onClick={() => setViewOffersProductModal(false)}
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition"
+        >
+          Close
+        </button>
+
+        <button
+          onClick={() => {
+            setViewOffersProductModal(false);
+            setOffersBuyModal(true); // Open Buy Modal directly from here
+          }}
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+        >
+          Buy Now
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
 
       {/* Payment Modal */}
@@ -1633,14 +1765,15 @@ const UserPage = () => {
             </button>
           </div>
         </div>
-
       )}
+
 
 
 
 
       {/* Product Details Modal */}
       {showProductDetails && <ProductDetailsModal />}
+
 
 
     </div>
