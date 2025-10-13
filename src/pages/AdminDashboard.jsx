@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-const base_url_shopkeeper=import.meta.env.REACT_APP_base_url_shopkeeper
+const base_url_shopkeeper=import.meta.env.VITE_BASE_URL
 
 const AdminDashboard = () => {
   const [shopkeepers, setShopkeepers] = useState([]);
@@ -11,52 +11,9 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('shopkeepers');
 
   // Mock data for demonstration - replace with actual API call
-  const mockShopkeepers = [
-    {
-      id: 1,
-      name: "Rajesh Kumar",
-      email: "rajesh@example.com",
-      phone: "+91 9876543210",
-      shopName: "Kumar General Store",
-      address: "Main Market, Delhi",
-      status: "pending",
-      requestDate: "2024-09-01",
-      category: "Grocery"
-    },
-    {
-      id: 2,
-      name: "Priya Sharma",
-      email: "priya@example.com",
-      phone: "+91 9876543211",
-      shopName: "Sharma Electronics",
-      address: "Electronics Market, Mumbai",
-      status: "accepted",
-      requestDate: "2024-08-28",
-      category: "Electronics"
-    },
-    {
-      id: 3,
-      name: "Mohammed Ali",
-      email: "ali@example.com",
-      phone: "+91 9876543212",
-      shopName: "Ali Fashion Hub",
-      address: "Fashion Street, Bangalore",
-      status: "rejected",
-      requestDate: "2024-09-03",
-      category: "Fashion"
-    },
-    {
-      id: 4,
-      name: "Sunita Devi",
-      email: "sunita@example.com",
-      phone: "+91 9876543213",
-      shopName: "Sunita Sweets",
-      address: "Sweet Market, Pune",
-      status: "pending",
-      requestDate: "2024-09-05",
-      category: "Food"
-    }
-  ];
+
+
+  
   // Simulate API call
   useEffect(() => {
     const fetchShopkeepers = async () => {
@@ -64,7 +21,7 @@ const AdminDashboard = () => {
       try {
         // Replace this with actual API call
         // const response = await axios.get('http://localhost:8000/api/v1/shopKeeper/getShopKeeper');
-        const response = await axios.get(`${base_url_shopkeeper}/getShopKeeper`);
+        const response = await axios.get(`${base_url_shopkeeper}/api/v1/shopKeeper/getShopKeeper`);
 
         const data = await response.data.data
         console.log("data",data);
@@ -73,7 +30,6 @@ const AdminDashboard = () => {
         // Using mock data for demonstration
         setTimeout(() => {
           setShopkeepers(data);
-          // setFilteredShopkeepers(mockShopkeepers);
           setFilteredShopkeepers(data);
 
           setLoading(false);
@@ -89,15 +45,24 @@ const AdminDashboard = () => {
 
   // Filter shopkeepers based on search and status
   useEffect(() => {
+    console.log("shopkeepers",shopkeepers);
+    
     let filtered = shopkeepers;
 
     // Filter by search term
     if (searchTerm) {
-      filtered = filtered.filter(shop => 
-        shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        shop.shopName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        shop.email.toLowerCase().includes(searchTerm.toLowerCase())
+      console.log("searchTerm",searchTerm);
+      
+      filtered = filtered?.filter(shop => 
+        shop?.name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+        shop?.shopName?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+        shop?.email?.toLowerCase().includes(searchTerm?.toLowerCase())
       );
+
+      console.log("filtered",filtered);
+      setFilteredShopkeepers(filtered);
+
+      
     }
 
     // Filter by status
@@ -141,7 +106,7 @@ const AdminDashboard = () => {
 
   
   return (
-    <div className="min-h-screen bg-gray-50 -mt-148">
+    <div className="min-h-screen bg-gray-50 ">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="flex items-center justify-between px-6 py-4">
@@ -204,7 +169,7 @@ const AdminDashboard = () => {
                   <p className="text-gray-600 mt-1">Manage shopkeeper registration requests</p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-500">Total: {filteredShopkeepers.length}</span>
+                  <span className="text-sm text-gray-500">Total: {filteredShopkeepers?.length}</span>
                 </div>
               </div>
 
@@ -246,19 +211,19 @@ const AdminDashboard = () => {
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                   <div className="text-2xl font-bold text-yellow-600">
-                    {shopkeepers.filter(s => s.status === 0).length}
+                    {shopkeepers?.filter(s => s.status === 0).length}
                   </div>
                   <div className="text-sm text-gray-600">Pending</div>
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                   <div className="text-2xl font-bold text-green-600">
-                    {shopkeepers.filter(s => s.status === 1).length}
+                    {shopkeepers?.filter(s => s.status === 1).length}
                   </div>
                   <div className="text-sm text-gray-600">Accepted</div>
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                   <div className="text-2xl font-bold text-red-600">
-                    {shopkeepers.filter(s => s.status === 'rejected').length}
+                    {shopkeepers?.filter(s => s.status === 'rejected').length}
                   </div>
                   <div className="text-sm text-gray-600">Rejected</div>
                 </div>
@@ -297,7 +262,7 @@ const AdminDashboard = () => {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredShopkeepers.map((shopkeeper) => (
+                        {filteredShopkeepers?.map((shopkeeper) => (
                           <tr key={shopkeeper.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div>
@@ -338,15 +303,15 @@ const AdminDashboard = () => {
                                     onClick={() => handleStatusUpdate(shopkeeper.id, 'rejected')}
                                     className="bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded-md text-xs font-medium transition-colors"
                                   >
-                                    Reject
+                                    Reject 
                                   </button>
                                 </div>
                               )}
-                              {/* {shopkeeper.status !== 'pending' && ( */}
-                                {/* // <button className="text-blue-600 hover:text-blue-800 text-xs font-medium"> */}
-                                {/* //   View Details */}
-                                {/* // </button> */}
-                              {/* )} */}
+                               {shopkeeper.status !== 'pending' && ( 
+                                 <button className="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                                   View Details 
+                             </button> 
+                             )} 
                             </td>
                           </tr>
                         ))}
@@ -355,7 +320,7 @@ const AdminDashboard = () => {
                   </div>
                 )}
 
-                {!loading && filteredShopkeepers.length === 0 && (
+                {!loading && filteredShopkeepers?.length === 0 && (
                   <div className="text-center py-12">
                     <span className="text-gray-500">No shopkeepers found matching your criteria.</span>
                   </div>

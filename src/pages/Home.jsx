@@ -100,7 +100,12 @@ const Home = () => {
           setLoginModalState(false);
           navigat("/userpage", { state: { loginUser } });
           toast.success("Login Succesfully")
-        } else {
+        }else if(user.role === "admin"){
+          navigat("/AdminDashboard",{state :{loginUser}});
+          toast.success("Login Succesfully")
+
+        } 
+        else if(user.role === "shopkeeper") {
           console.log("Access denied: only users can enter this page");
           toast.success("Login Succesfully")
           navigat("/shopkeeper", { state: { loginUser } })
