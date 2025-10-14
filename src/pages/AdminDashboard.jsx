@@ -10,19 +10,13 @@ const AdminDashboard = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('shopkeepers');
 
-  // Mock data for demonstration - replace with actual API call
-
-
-  
   // Simulate API call
   useEffect(() => {
     const fetchShopkeepers = async () => {
       setLoading(true);
       try {
-        // Replace this with actual API call
         // const response = await axios.get('http://localhost:8000/api/v1/shopKeeper/getShopKeeper');
         const response = await axios.get(`${base_url_shopkeeper}/api/v1/shopKeeper/getShopKeeper`);
-
         const data = await response.data.data
         console.log("data",data);
         
@@ -45,8 +39,6 @@ const AdminDashboard = () => {
 
   // Filter shopkeepers based on search and status
   useEffect(() => {
-    console.log("shopkeepers",shopkeepers);
-    
     let filtered = shopkeepers;
 
     // Filter by search term
