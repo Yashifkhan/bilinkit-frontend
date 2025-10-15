@@ -164,17 +164,14 @@ const UserPage = () => {
   // Filter and sort products
   useEffect(() => {
     let result = allProduct || [];
-
     if (searchTerm.trim().length > 0) {
       result = result.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+        );
     }
-
     if (selectedCategory !== "All") {
       result = result.filter(product => product.category === selectedCategory);
     }
-
     result = [...result].sort((a, b) => {
       if (sortOption === "name") {
         return a.name.localeCompare(b.name);
@@ -632,8 +629,6 @@ const UserPage = () => {
                 </div>
               )}
             </div>
-
-
 
             <div className="p-2 bg-gray-50 min-h-screen">
               {isLoading ? (
