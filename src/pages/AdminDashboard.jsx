@@ -511,127 +511,169 @@ const AdminDashboard = () => {
           )
           }
 
-          {activeTab === "allProducts" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products?.map((product) => {
-                const cartQuantity = getCartItemQuantity(product.id);
-                // console.log("products stock",product.stock);
+       {activeTab === "allProducts" && (
+  <div className="space-y-8">
+    {/* Header & Filters */}
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-800">All Products</h2>
+        <p className="text-gray-600 mt-1">Browse available products from various sellers</p>
+      </div>
 
+      <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+        {/* Search */}
+        <div className="relative flex-1">
+          <input
+            type="search"
+            placeholder="Search Products..."
+            className="w-full border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            value={searchTerm}
+            // onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <span className="absolute right-3 top-2.5 text-gray-400">🔍</span>
+        </div>
 
-                return (
-                  <div
-                    key={product.id}
-                    className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-green-200/50 hover:-translate-y-1 transition-all duration-300 ease-out"
+        {/* Category Filter */}
+        <select
+          // value={selectedCategory}
+          // onChange={(e) => setSelectedCategory(e.target.value)}
+          className="border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        >
+          {/* {categories.map(category => (
+            <option key={category} value={category}>{category}</option>
+          ))} */}
+        </select>
+
+        {/* Sorting */}
+        <select
+          // value={sortOption}
+          // onChange={(e) => setSortOption(e.target.value)}
+          className="border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        >
+          <option value="name">Sort by Name</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+        </select>
+      </div>
+    </div>
+
+    {/* Products Grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {products?.map((product) => {
+        const cartQuantity = getCartItemQuantity(product.id);
+
+        return (
+          <div
+            key={product.id}
+            className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-green-200/50 hover:-translate-y-1 transition-all duration-300 ease-out"
+          >
+            <div className="p-4">
+              {/* Product Image */}
+              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
+                <img
+                  src={`${base_url_img}${product?.image_url}`}
+                  alt={product.name || "Product image"}
+                  className="max-h-28 object-contain group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button
+                    onClick={() => openProductDetails(product)}
+                    className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md text-red hover:text-white bg-red-500 hover:bg-red-600 transition-colors"
+                    title="View Details"
                   >
-                    <div className="p-4">
-                      {/* Product Image */}
-                      <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
-                        <img
-                          src={`${base_url_img}${product?.image_url}`}
-                          alt={product.name || "Product image"}
-                          className="max-h-28 object-contain group-hover:scale-110 transition-transform duration-300"
-                        />
-                        {/* Quick View Button */}
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <button
-                            onClick={() => openProductDetails(product)}
-                            className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md text-red hover:text-white bg-red-500 hover:bg-red-600 transition-colors"
-                            title="View Details"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
+                    <Eye className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
 
-                      {/* Product Title */}
-                      <h3 className="font-bold text-gray-900 mb-2 text-lg leading-tight group-hover:text-green-600 transition-colors duration-200">
-                        {product.name}
-                      </h3>
+              {/* Product Info */}
+              <h3 className="font-bold text-gray-900 mb-2 text-lg leading-tight group-hover:text-green-600 transition-colors duration-200">
+                {product.name}
+              </h3>
 
-                      {/* Product Description */}
-                      {
-                        product.stock < 1 ? <p className='text-red-600 text-sm'>Currently Unavilable (out of stock)</p> :
-                          <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-                            {product.description}
-                          </p>
-                      }
+              {product.stock < 1 ? (
+                <p className="text-red-600 text-sm">Currently Unavailable (Out of Stock)</p>
+              ) : (
+                <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                  {product.description}
+                </p>
+              )}
 
-                      {/* Price + Category */}
-                      <div className="flex justify-between items-center mb-3">
-                        <div className="flex items-center">
-                          <span className="text-2xl font-bold text-green-600">
-                            ₹{product.price.toLocaleString()}
-                          </span>
-                        </div>
-                        <span className="text-xs font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-full border border-green-100">
-                          {product.category}
-                        </span>
-                      </div>
+              {/* Price & Category */}
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-2xl font-bold text-green-600">
+                  ₹{product.price.toLocaleString()}
+                </span>
+                <span className="text-xs font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-full border border-green-100">
+                  {product.category}
+                </span>
+              </div>
 
-                      {/* Seller Info */}
-                      <div className="text-xs text-gray-500 mb-4 flex items-center">
-                        <svg
-                          className="w-3 h-3 mr-1 text-gray-400"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        Sold by:{" "}
-                        <span className="font-medium text-gray-700 ml-1">
-                          {product.shopkeeper_name}
-                        </span>
-                      </div>
+              {/* Seller */}
+              <div className="text-xs text-gray-500 mb-4 flex items-center">
+                <svg
+                  className="w-3 h-3 mr-1 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Sold by:{" "}
+                <span className="font-medium text-gray-700 ml-1">
+                  {product.shopkeeper_name}
+                </span>
+              </div>
 
-                      {/* Cart / Buy Buttons */}
-                      <div className="flex gap-2">
-                        {cartQuantity > 0 ? (
-                          <div className="flex items-center border border-green-500 rounded-lg flex-1">
-                            <button
-                              onClick={() => removeFromCart(product.id)}
-                              className="p-2 text-green-600 hover:bg-green-50"
-                            >
-                              <Minus className="h-4 w-4" />
-                            </button>
-                            <span className="px-3 py-2 text-green-600 font-semibold">
-                              {cartQuantity}
-                            </span>
-                            <button
-                              onClick={() => addToCart(product)}
-                              className="p-2 text-green-600 hover:bg-green-50"
-                            >
-                              <Plus className="h-4 w-4" />
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => addToCart(product)}
-                            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-green-600/25 hover:shadow-green-600/40"
-                          >
-                            Add to Cart
-                          </button>
-                        )}
-                        <button
-                          disabled={product.stock < 1}
-                          onClick={() => buyNow(product)}
-                          className={`flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-600/25 hover:shadow-orange-600/40 
-    ${product.stock < 1 ? "opacity-50 cursor-not-allowed" : ""}`}
-                        >
-                          {product.stock < 1 ? "Out of Stock" : "Buy Now"}
-                        </button>
-
-                      </div>
-                    </div>
+              {/* Cart Buttons */}
+              <div className="flex gap-2">
+                {cartQuantity > 0 ? (
+                  <div className="flex items-center border border-green-500 rounded-lg flex-1">
+                    <button
+                      onClick={() => removeFromCart(product.id)}
+                      className="p-2 text-green-600 hover:bg-green-50"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="px-3 py-2 text-green-600 font-semibold">
+                      {cartQuantity}
+                    </span>
+                    <button
+                      onClick={() => addToCart(product)}
+                      className="p-2 text-green-600 hover:bg-green-50"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
                   </div>
-                );
-              })}
+                ) : (
+                  <button
+                    onClick={() => addToCart(product)}
+                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-green-600/25 hover:shadow-green-600/40"
+                  >
+                    Add to Cart
+                  </button>
+                )}
+
+                <button
+                  disabled={product.stock < 1}
+                  onClick={() => buyNow(product)}
+                  className={`flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-600/25 hover:shadow-orange-600/40 
+                  ${product.stock < 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  {product.stock < 1 ? "Out of Stock" : "Buy Now"}
+                </button>
+              </div>
             </div>
-          )
-          }
+          </div>
+        );
+      })}
+    </div>
+  </div>
+)}
+
 
         </main>
 

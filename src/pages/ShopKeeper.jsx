@@ -302,119 +302,140 @@ const [offersDate, setOffersDate] = useState({ startDate: "", endDate: "" });
     };
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Add New Product</h2>
-            <button
-              onClick={() => { setShowAddProductModal(false); setShowSection({ id: "products" }) }}
-              className="text-gray-500 hover:text-gray-700 text-xl transition-colors"
-            >
-              ✕
-            </button>
-          </div>
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+  <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto border-t-4 border-green-600">
+    
+    {/* Header */}
+    <div className="flex justify-between items-center mb-6">
+      <h2 className="text-2xl font-bold text-green-700">Add New Product</h2>
+      <button
+        onClick={() => { setShowAddProductModal(false); setShowSection({ id: "products" }) }}
+        className="text-red-500 hover:text-red-700 text-2xl font-semibold transition-all"
+      >
+        ✕
+      </button>
+    </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
-              <input
-                type="text"
-                value={productData.name}
-                onChange={(e) => setProductData({ ...productData, name: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                placeholder="Enter product name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea
-                value={productData.description}
-                onChange={(e) => setProductData({ ...productData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                rows="2"
-                placeholder="Enter product description"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
-              <input
-                type="number"
-                min="0"
-                value={productData.price}
-                onChange={(e) => setProductData({ ...productData, price: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                placeholder="Enter price"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
-              <select
-                value={productData.category}
-                onChange={(e) => setProductData({ ...productData, category: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-              >
-                <option value="">Select Category</option>
-                <option value="Fruits">Fruits</option>
-                <option value="Vegetables">Vegetables</option>
-                <option value="Footwear">Footwear</option>
-                <option value="Sports">Sports</option>
-                <option value="Snacks">Snacks</option>
-                <option value="Beverages">Beverages</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Natural Products">Natural Products</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Stock Quantity *</label>
-              <input
-                type="number"
-                min="0"
-                value={productData.stock}
-                onChange={(e) => setProductData({ ...productData, stock: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                placeholder="Enter stock quantity"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
-              <input
-                type="number"
-                min="0"
-                value={productData.discount}
-                onChange={(e) => setProductData({ ...productData, discount: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                placeholder="Enter product discount"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
-              <input
-                type="file"
-                onChange={(e) =>
-                  setProductData({
-                    ...productData,
-                    image_url: e.target.files[0],
-                  })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-              />
-            </div>
-
-            <button
-              onClick={handleSubmit}
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-medium shadow-md hover:shadow-lg"
-            >
-              Add Product
-            </button>
-          </div>
-        </div>
+    {/* Input Fields */}
+    <div className="space-y-5">
+      {/* Product Name */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Product Name *</label>
+        <input
+          type="text"
+          value={productData.name}
+          onChange={(e) => setProductData({ ...productData, name: e.target.value })}
+          placeholder="Enter product name"
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+        />
       </div>
+
+      {/* Description */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+        <textarea
+          value={productData.description}
+          onChange={(e) => setProductData({ ...productData, description: e.target.value })}
+          rows="2"
+          placeholder="Enter product description"
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+        />
+      </div>
+
+      {/* Price */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Price (₹) *</label>
+        <input
+          type="number"
+          min="0"
+          value={productData.price}
+          onChange={(e) => setProductData({ ...productData, price: e.target.value })}
+          placeholder="Enter price"
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+        />
+      </div>
+
+      {/* Category */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
+        <select
+          value={productData.category}
+          onChange={(e) => setProductData({ ...productData, category: e.target.value })}
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+        >
+          <option value="">Select Category</option>
+          <option value="Fruits">Fruits</option>
+          <option value="Vegetables">Vegetables</option>
+          <option value="Footwear">Footwear</option>
+          <option value="Sports">Sports</option>
+          <option value="Snacks">Snacks</option>
+          <option value="Beverages">Beverages</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Natural Products">Natural Products</option>
+        </select>
+      </div>
+
+      {/* Stock */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Stock Quantity *</label>
+        <input
+          type="number"
+          min="0"
+          value={productData.stock}
+          onChange={(e) => setProductData({ ...productData, stock: e.target.value })}
+          placeholder="Enter stock quantity"
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+        />
+      </div>
+
+      {/* Discount */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Discount (%)</label>
+        <input
+          type="number"
+          min="0"
+          value={productData.discount}
+          onChange={(e) => setProductData({ ...productData, discount: e.target.value })}
+          placeholder="Enter product discount"
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+        />
+      </div>
+
+      {/* Upload Image */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Upload Image</label>
+        <input
+          type="file"
+          onChange={(e) =>
+            setProductData({
+              ...productData,
+              image_url: e.target.files[0],
+            })
+          }
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+        />
+      </div>
+
+      {/* Buttons */}
+      <div className="flex gap-3 pt-3">
+        <button
+          onClick={() => { setShowAddProductModal(false); setShowSection({ id: "products" }) }}
+          className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-lg hover:from-red-600 hover:to-red-700 transition-all font-semibold shadow-md"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={handleSubmit}
+          className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-md"
+        >
+          Add Product
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
     );
   };
 
