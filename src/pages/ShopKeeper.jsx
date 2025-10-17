@@ -33,11 +33,11 @@ const ShopKeeper = () => {
   const [orderStatusFilter, setOrderStatusFilter] = useState("all");
   const [showSection, setShowSection] = useState({ id: "products" })
   const [checkBoxModal, setCheckBoxModal] = useState(false)
-  const [selectProductForOfferModal,setSelectProductForOfferModal]=useState(false)
-  const [selectProductsForOffer,setSelectProductsForOffer]=useState([])
-  const [offerModalOpen,setOfferModalOpen]=useState(false)
+  const [selectProductForOfferModal, setSelectProductForOfferModal] = useState(false)
+  const [selectProductsForOffer, setSelectProductsForOffer] = useState([])
+  const [offerModalOpen, setOfferModalOpen] = useState(false)
   const [discount, setDiscount] = useState(0);
-const [offersDate, setOffersDate] = useState({ startDate: "", endDate: "" });
+  const [offersDate, setOffersDate] = useState({ startDate: "", endDate: "" });
 
 
 
@@ -175,9 +175,6 @@ const [offersDate, setOffersDate] = useState({ startDate: "", endDate: "" });
   }, []);
 
 
-  // Handle registration
-
-
   // Handle logout
   const handleLogout = () => {
     navigate("/")
@@ -302,139 +299,139 @@ const [offersDate, setOffersDate] = useState({ startDate: "", endDate: "" });
     };
 
     return (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-  <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto border-t-4 border-green-600">
-    
-    {/* Header */}
-    <div className="flex justify-between items-center mb-6">
-      <h2 className="text-2xl font-bold text-green-700">Add New Product</h2>
-      <button
-        onClick={() => { setShowAddProductModal(false); setShowSection({ id: "products" }) }}
-        className="text-red-500 hover:text-red-700 text-2xl font-semibold transition-all"
-      >
-        ✕
-      </button>
-    </div>
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto border-t-4 border-green-600">
 
-    {/* Input Fields */}
-    <div className="space-y-5">
-      {/* Product Name */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Product Name *</label>
-        <input
-          type="text"
-          value={productData.name}
-          onChange={(e) => setProductData({ ...productData, name: e.target.value })}
-          placeholder="Enter product name"
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-        />
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-green-700">Add New Product</h2>
+            <button
+              onClick={() => { setShowAddProductModal(false); setShowSection({ id: "products" }) }}
+              className="text-red-500 hover:text-red-700 text-2xl font-semibold transition-all"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Input Fields */}
+          <div className="space-y-5">
+            {/* Product Name */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Product Name *</label>
+              <input
+                type="text"
+                value={productData.name}
+                onChange={(e) => setProductData({ ...productData, name: e.target.value })}
+                placeholder="Enter product name"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+              <textarea
+                value={productData.description}
+                onChange={(e) => setProductData({ ...productData, description: e.target.value })}
+                rows="2"
+                placeholder="Enter product description"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+              />
+            </div>
+
+            {/* Price */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Price (₹) *</label>
+              <input
+                type="number"
+                min="0"
+                value={productData.price}
+                onChange={(e) => setProductData({ ...productData, price: e.target.value })}
+                placeholder="Enter price"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+              />
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
+              <select
+                value={productData.category}
+                onChange={(e) => setProductData({ ...productData, category: e.target.value })}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+              >
+                <option value="">Select Category</option>
+                <option value="Fruits">Fruits</option>
+                <option value="Vegetables">Vegetables</option>
+                <option value="Footwear">Footwear</option>
+                <option value="Sports">Sports</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Beverages">Beverages</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Natural Products">Natural Products</option>
+              </select>
+            </div>
+
+            {/* Stock */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Stock Quantity *</label>
+              <input
+                type="number"
+                min="0"
+                value={productData.stock}
+                onChange={(e) => setProductData({ ...productData, stock: e.target.value })}
+                placeholder="Enter stock quantity"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+              />
+            </div>
+
+            {/* Discount */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Discount (%)</label>
+              <input
+                type="number"
+                min="0"
+                value={productData.discount}
+                onChange={(e) => setProductData({ ...productData, discount: e.target.value })}
+                placeholder="Enter product discount"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+              />
+            </div>
+
+            {/* Upload Image */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Upload Image</label>
+              <input
+                type="file"
+                onChange={(e) =>
+                  setProductData({
+                    ...productData,
+                    image_url: e.target.files[0],
+                  })
+                }
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3 pt-3">
+              <button
+                onClick={() => { setShowAddProductModal(false); setShowSection({ id: "products" }) }}
+                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-lg hover:from-red-600 hover:to-red-700 transition-all font-semibold shadow-md"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleSubmit}
+                className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-md"
+              >
+                Add Product
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-
-      {/* Description */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-        <textarea
-          value={productData.description}
-          onChange={(e) => setProductData({ ...productData, description: e.target.value })}
-          rows="2"
-          placeholder="Enter product description"
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-        />
-      </div>
-
-      {/* Price */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Price (₹) *</label>
-        <input
-          type="number"
-          min="0"
-          value={productData.price}
-          onChange={(e) => setProductData({ ...productData, price: e.target.value })}
-          placeholder="Enter price"
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-        />
-      </div>
-
-      {/* Category */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
-        <select
-          value={productData.category}
-          onChange={(e) => setProductData({ ...productData, category: e.target.value })}
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-        >
-          <option value="">Select Category</option>
-          <option value="Fruits">Fruits</option>
-          <option value="Vegetables">Vegetables</option>
-          <option value="Footwear">Footwear</option>
-          <option value="Sports">Sports</option>
-          <option value="Snacks">Snacks</option>
-          <option value="Beverages">Beverages</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Natural Products">Natural Products</option>
-        </select>
-      </div>
-
-      {/* Stock */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Stock Quantity *</label>
-        <input
-          type="number"
-          min="0"
-          value={productData.stock}
-          onChange={(e) => setProductData({ ...productData, stock: e.target.value })}
-          placeholder="Enter stock quantity"
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-        />
-      </div>
-
-      {/* Discount */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Discount (%)</label>
-        <input
-          type="number"
-          min="0"
-          value={productData.discount}
-          onChange={(e) => setProductData({ ...productData, discount: e.target.value })}
-          placeholder="Enter product discount"
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-        />
-      </div>
-
-      {/* Upload Image */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Upload Image</label>
-        <input
-          type="file"
-          onChange={(e) =>
-            setProductData({
-              ...productData,
-              image_url: e.target.files[0],
-            })
-          }
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-        />
-      </div>
-
-      {/* Buttons */}
-      <div className="flex gap-3 pt-3">
-        <button
-          onClick={() => { setShowAddProductModal(false); setShowSection({ id: "products" }) }}
-          className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-lg hover:from-red-600 hover:to-red-700 transition-all font-semibold shadow-md"
-        >
-          Cancel
-        </button>
-
-        <button
-          onClick={handleSubmit}
-          className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-md"
-        >
-          Add Product
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
     );
   };
@@ -660,23 +657,23 @@ const [offersDate, setOffersDate] = useState({ startDate: "", endDate: "" });
   // Get unique categories for filter
   const categories = ["All", ...new Set(allProduct?.map(p => p.category) || [])];
 
-const handleApplyOffer = async() => {
-  const ProductsId = selectProductsForOffer.map((product) => product.id);
+  const handleApplyOffer = async () => {
+    const ProductsId = selectProductsForOffer.map((product) => product.id);
 
-  const offerData = {
-    ProductsId,         
-    discount,
-    offersDate,
-    shopkeeper_id: loginUser.id
+    const offerData = {
+      ProductsId,
+      discount,
+      offersDate,
+      shopkeeper_id: loginUser.id
+    };
+
+    const resp = await axios.post(`${base_url_products}/addOfferProducts`, offerData)
+    console.log("resp of add offer api ", resp.data);
+
+    setOfferModalOpen(false)
+    fetchProducts()
+
   };
-
-  const resp=await axios.post(`${base_url_products}/addOfferProducts`,offerData)
-  console.log("resp of add offer api ",resp.data);
-  
-  setOfferModalOpen(false)
-  fetchProducts()
-
-};
 
 
   return (
@@ -947,12 +944,12 @@ const handleApplyOffer = async() => {
 
                   {
                     selectProductForOfferModal && (
-                       <button
-                    onClick={() => setOfferModalOpen(true)}
-                    className="bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-2.5 rounded-xl shadow hover:from-red-600 hover:to-red-700 transition-all font-medium"
-                  >
-                    Apply Offer
-                  </button>
+                      <button
+                        onClick={() => setOfferModalOpen(true)}
+                        className="bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-2.5 rounded-xl shadow hover:from-red-600 hover:to-red-700 transition-all font-medium"
+                      >
+                        Apply Offer
+                      </button>
                     )
                   }
 
@@ -960,241 +957,240 @@ const handleApplyOffer = async() => {
               </div>
 
 
-             {/* Apply Offer Modal */}
-{offerModalOpen && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
-    <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 border-t-4 border-green-600 animate-fadeIn">
+              {/* Apply Offer Modal */}
+              {offerModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+                  <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 border-t-4 border-green-600 animate-fadeIn">
 
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">🎉 Apply Offer on Products</h2>
-        <button
-          onClick={() => setOfferModalOpen(false)}
-          className="text-red-500 hover:text-red-600 font-bold text-lg"
-        >
-          ✖
-        </button>
-      </div>
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-semibold text-gray-800">🎉 Apply Offer on Products</h2>
+                      <button
+                        onClick={() => setOfferModalOpen(false)}
+                        className="text-red-500 hover:text-red-600 font-bold text-lg"
+                      >
+                        ✖
+                      </button>
+                    </div>
 
-      {/* Discount Input */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
-        <input
-          type="number"
-          value={discount}
-          onChange={(e) => setDiscount(e.target.value)}
-          placeholder="Enter discount percentage"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
-        />
-      </div>
+                    {/* Discount Input */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
+                      <input
+                        type="number"
+                        value={discount}
+                        onChange={(e) => setDiscount(e.target.value)}
+                        placeholder="Enter discount percentage"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                      />
+                    </div>
 
-      {/* Product Preview Section */}
-      <div className="max-h-64 overflow-y-auto border rounded-lg p-3 bg-gray-50">
-        {selectProductsForOffer?.map((product) => {
-          const discountedPrice =
-            product.price - (product.price * discount) / 100;
+                    {/* Product Preview Section */}
+                    <div className="max-h-64 overflow-y-auto border rounded-lg p-3 bg-gray-50">
+                      {selectProductsForOffer?.map((product) => {
+                        const discountedPrice =
+                          product.price - (product.price * discount) / 100;
 
-          return (
-            <div
-              key={product.id}
-              className="flex items-center justify-between bg-white rounded-lg p-3 mb-2 shadow-sm border border-gray-200"
-            >
-              <div className="flex items-center gap-3">
-                <img
-                  src={`http://localhost:8000${product.image_url}`}
-                  alt={product.name}
-                  className="w-12 h-12 object-contain rounded-lg border"
-                />
-                <div>
-                  <p className="font-medium text-gray-800">{product.name}</p>
-                  <p className="text-xs text-gray-500">Original: ₹{product.price}</p>
+                        return (
+                          <div
+                            key={product.id}
+                            className="flex items-center justify-between bg-white rounded-lg p-3 mb-2 shadow-sm border border-gray-200"
+                          >
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={`http://localhost:8000${product.image_url}`}
+                                alt={product.name}
+                                className="w-12 h-12 object-contain rounded-lg border"
+                              />
+                              <div>
+                                <p className="font-medium text-gray-800">{product.name}</p>
+                                <p className="text-xs text-gray-500">Original: ₹{product.price}</p>
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <p className="font-semibold text-green-600">
+                                ₹{discountedPrice.toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Date Inputs */}
+                    <div className="mt-4 grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                        <input
+                          onChange={(e) => setOffersDate({ ...offersDate, startDate: e.target.value })}
+                          type="date"
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                        <input
+                          onChange={(e) => setOffersDate({ ...offersDate, endDate: e.target.value })}
+                          type="date"
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Footer Buttons */}
+                    <div className="flex justify-end gap-3 mt-6">
+                      <button
+                        onClick={() => setOfferModalOpen(false)}
+                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleApplyOffer}
+                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition"
+                      >
+                        Apply Offer
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              <div className="text-right">
-                <p className="font-semibold text-green-600">
-                  ₹{discountedPrice.toFixed(2)}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Date Inputs */}
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-          <input
-          onChange={(e)=>setOffersDate({...offersDate,startDate:e.target.value})}
-            type="date"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-          <input
-          onChange={(e)=>setOffersDate({...offersDate, endDate:e.target.value})}
-            type="date"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
-          />
-        </div>
-      </div>
-
-      {/* Footer Buttons */}
-      <div className="flex justify-end gap-3 mt-6">
-        <button
-          onClick={() => setOfferModalOpen(false)}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleApplyOffer}
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition"
-        >
-          Apply Offer
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+              )}
 
 
-             {/* Table Section */}
-<div className="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden">
-  <div className="overflow-x-auto">
-    <table className="w-full text-sm">
-      <thead className="bg-gray-50 border-b border-gray-200">
-        <tr>
-          {/* Show checkbox header only when modal active */}
-          {checkBoxModal && (
-            <th className="px-4 py-3">
-              <input type="checkbox" disabled className="opacity-0 cursor-default" />
-            </th>
-          )}
-          {["Image", "Product", "Price", "Stock", "Discount", "Status", "Actions"].map(
-            (heading) => (
-              <th
-                key={heading}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                {heading}
-              </th>
-            )
-          )}
-        </tr>
-      </thead>
+              {/* Table Section */}
+              <div className="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        {/* Show checkbox header only when modal active */}
+                        {checkBoxModal && (
+                          <th className="px-4 py-3">
+                            <input type="checkbox" disabled className="opacity-0 cursor-default" />
+                          </th>
+                        )}
+                        {["Image", "Product", "Price", "Stock", "Discount", "Status", "Actions"].map(
+                          (heading) => (
+                            <th
+                              key={heading}
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              {heading}
+                            </th>
+                          )
+                        )}
+                      </tr>
+                    </thead>
 
-      <tbody className="bg-white divide-y divide-gray-200">
-        {myProducts?.map((product) => (
-          <tr key={product?.id} className="hover:bg-gray-50 transition-colors">
-            {/* ✅ Checkbox Column (only show if modal open) */}
-            {checkBoxModal && (
-              <td className="px-4 py-4 text-center">
-                <input
-                  type="checkbox"
-                  value={selectProductForOfferModal}
-                  onClick={()=>setSelectProductsForOffer((prev)=>[...prev, product])}
-                 onChange={(e) => setSelectProductForOfferModal(e.target.checked)}
-                  className="w-4 h-4 accent-green-500 cursor-pointer"
-                />
-              </td>
-            )}
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {myProducts?.map((product) => (
+                        <tr key={product?.id} className="hover:bg-gray-50 transition-colors">
+                          {/* ✅ Checkbox Column (only show if modal open) */}
+                          {checkBoxModal && (
+                            <td className="px-4 py-4 text-center">
+                              <input
+                                type="checkbox"
+                                value={selectProductForOfferModal}
+                                onClick={() => setSelectProductsForOffer((prev) => [...prev, product])}
+                                onChange={(e) => setSelectProductForOfferModal(e.target.checked)}
+                                className="w-4 h-4 accent-green-500 cursor-pointer"
+                              />
+                            </td>
+                          )}
 
-            {/* Image */}
-            <td className="py-2">
-              <div className="flex justify-center items-center">
-                <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-2 w-[80px] h-[80px] flex items-center justify-center overflow-hidden group">
-                  <img
-                    src={`http://localhost:8000${product?.image_url}`}
-                    alt={product?.name || "Product image"}
-                    className="max-w-[80px] max-h-[80px] object-contain group-hover:scale-110 transition-transform duration-300"
-                  />
+                          {/* Image */}
+                          <td className="py-2">
+                            <div className="flex justify-center items-center">
+                              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-2 w-[80px] h-[80px] flex items-center justify-center overflow-hidden group">
+                                <img
+                                  src={`http://localhost:8000${product?.image_url}`}
+                                  alt={product?.name || "Product image"}
+                                  className="max-w-[80px] max-h-[80px] object-contain group-hover:scale-110 transition-transform duration-300"
+                                />
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Product Name + Category */}
+                          <td className="px-6 py-4">
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">{product?.name}</div>
+                              <div className="text-xs text-gray-500">{product?.category}</div>
+                            </div>
+                          </td>
+
+                          {/* Price */}
+                          <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900">
+                            ₹{product?.price}
+                          </td>
+
+                          {/* Stock */}
+                          <td className="px-6 py-4 whitespace-nowrap text-gray-900">{product?.stock}</td>
+
+                          {/* Discount */}
+                          <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                            {product?.discount}%
+                          </td>
+
+                          {/* Status */}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2 p-2">
+                              <button
+                                onClick={() => handleToggle(product)}
+                                disabled={loading}
+                                className={`px-3 py-1 rounded text-white text-sm font-medium ${product?.status === 1
+                                    ? "bg-green-500 hover:bg-green-600"
+                                    : "bg-gray-500 hover:bg-gray-600"
+                                  } transition-colors`}
+                              >
+                                {loading
+                                  ? "Updating..."
+                                  : product?.status === 1
+                                    ? "Active"
+                                    : "Inactive"}
+                              </button>
+                            </div>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                            <button
+                              className="text-blue-600 hover:text-blue-800 transition-colors"
+                              onClick={() => openEditModal(product)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(product.id)}
+                              className="text-red-600 hover:text-red-800 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
+
+                {/* Empty State */}
+                {myProducts.length === 0 && (
+                  <div className="text-center py-12">
+                    <div className="text-gray-400 text-5xl mb-4">📦</div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No products yet</h3>
+                    <p className="text-gray-500 mb-4">
+                      Start by adding your first product to your inventory.
+                    </p>
+                    <button
+                      onClick={() => setShowAddProductModal(true)}
+                      className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2.5 rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-medium"
+                    >
+                      Add Your First Product
+                    </button>
+                  </div>
+                )}
               </div>
-            </td>
-
-            {/* Product Name + Category */}
-            <td className="px-6 py-4">
-              <div>
-                <div className="text-sm font-medium text-gray-900">{product?.name}</div>
-                <div className="text-xs text-gray-500">{product?.category}</div>
-              </div>
-            </td>
-
-            {/* Price */}
-            <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900">
-              ₹{product?.price}
-            </td>
-
-            {/* Stock */}
-            <td className="px-6 py-4 whitespace-nowrap text-gray-900">{product?.stock}</td>
-
-            {/* Discount */}
-            <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-              {product?.discount}%
-            </td>
-
-            {/* Status */}
-            <td className="px-6 py-4 whitespace-nowrap">
-              <div className="flex items-center gap-2 p-2">
-                <button
-                  onClick={() => handleToggle(product)}
-                  disabled={loading}
-                  className={`px-3 py-1 rounded text-white text-sm font-medium ${
-                    product?.status === 1
-                      ? "bg-green-500 hover:bg-green-600"
-                      : "bg-gray-500 hover:bg-gray-600"
-                  } transition-colors`}
-                >
-                  {loading
-                    ? "Updating..."
-                    : product?.status === 1
-                    ? "Active"
-                    : "Inactive"}
-                </button>
-              </div>
-            </td>
-
-            {/* Actions */}
-            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-              <button
-                className="text-blue-600 hover:text-blue-800 transition-colors"
-                onClick={() => openEditModal(product)}
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeleteProduct(product.id)}
-                className="text-red-600 hover:text-red-800 transition-colors"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-
-  {/* Empty State */}
-  {myProducts.length === 0 && (
-    <div className="text-center py-12">
-      <div className="text-gray-400 text-5xl mb-4">📦</div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">No products yet</h3>
-      <p className="text-gray-500 mb-4">
-        Start by adding your first product to your inventory.
-      </p>
-      <button
-        onClick={() => setShowAddProductModal(true)}
-        className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2.5 rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-medium"
-      >
-        Add Your First Product
-      </button>
-    </div>
-  )}
-</div>
 
             </div>
           }
