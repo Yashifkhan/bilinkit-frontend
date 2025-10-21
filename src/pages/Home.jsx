@@ -102,6 +102,7 @@ const Home = () => {
           toast.success("Login Succesfully")
         }else if(user.role === "admin"){
           navigat("/AdminDashboard",{state :{loginUser}});
+          
           toast.success("Login Succesfully")
 
         } 
