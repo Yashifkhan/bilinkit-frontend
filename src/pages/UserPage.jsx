@@ -892,10 +892,7 @@ const UserPage = () => {
 
             <div className="relative">
 
-              <button
-                onClick={() => setViewAddTocartItemModal(true)}
-                className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors"
-              >
+              <button onClick={() => setViewAddTocartItemModal(true)} className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors" >
                 <div className="relative">
                   <ShoppingCart className={`h-7.5 w-7.5 ${cartItems?.length > 0 ? "" : ""}`} />
                   {cartItems?.length > 0 && (
