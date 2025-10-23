@@ -60,7 +60,7 @@ console.log("orders",orders);
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-green-50">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 border-2 border-gray-100">
+        <div className="bg-white rounded-2xl shadow-lg p-8 border-2 border-gray-100">
           {/* Header */}
           <div className="mb-4">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-green-600 bg-clip-text text-transparent mb-2">

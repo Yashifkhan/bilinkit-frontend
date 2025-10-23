@@ -1,9 +1,12 @@
 import axios from 'axios';
 import { Eye, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
-import { FaRegUser } from 'react-icons/fa';
+import { FaGooglePay, FaRegUser } from 'react-icons/fa';
+import { SiContactlesspayment, SiPaytm } from 'react-icons/si';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import UserAddress from '../compoenents/UserAddress';
+import UserOrders from '../compoenents/UserOrders';
 
 const base_url_shopkeeper = import.meta.env.VITE_BASE_URL
 const base_url_address = import.meta.env.VITE_BASE_URL
@@ -32,6 +35,20 @@ const AdminDashboard = () => {
     const [cartItems, setCartItems] = useState([]);
       const [viewAddTocartItemModal, setViewAddTocartItemModal] = useState(false);
     const [deletItemInCart,setDeletItemInCart]=useState(false)
+      const [selectedProduct, setSelectedProduct] = useState(null);
+        const [viewBuyItemModal, setViewBuyItemModal] = useState(false);
+          const [buyItems, setBuyItems] = useState([]);
+            const [qr, setQr] = useState(false)
+              const [paymentMethod, setPaymentMethod] = useState("phonepe")
+                const [showSection, setShowSection] = useState({ id: 'products' });
+                  const [userOrders, setUserOrders] = useState(null)
+
+              
+            
+          
+        
+      
+    
   
 
 
@@ -195,10 +212,30 @@ const AdminDashboard = () => {
       }
     };
 
+
+      // fetch products orderded 
+  const fetchorder = async () => {
+    const resp = await axios.get(`${base_url_address}/api/v1/orders/getOrdersByUser/${loginUser?.id}`)
+    console.log("resp of get orders", resp.data.data);
+    setUserOrders(resp.data.data)
+    if (resp.data.success) {
+      const parsedOrders = resp.data.data.map((order) => ({
+        ...order,
+        delivered_address: JSON.parse(order.delivered_address), // ✅ parse here
+      }));
+      setUserOrders(parsedOrders);
+    }
+
+
+  }
+
+
   useEffect(() => {
     fetchAddress()
     fetchProducts()
     fetchUserCart()
+    fetchorder()
+
   }, [])
 
 
@@ -259,12 +296,89 @@ const AdminDashboard = () => {
     return cartItems.reduce((total, item) => total + (Number(item.price) * Number(item.quantity)), 0);
   };
 
+   const getBuyTotalPrice = () => {
+    return buyItems.reduce((total, item) => total + (Number(item.price) * Number(item.quantity)), 0);
+  };
+
+  const buyNow = (product, discountedPrice) => {
+    // const updatedProduct = {
+    //   ...product, price: discountedPrice ? discountedPrice : product.price,
+    // };
+
+    // console.log("updated product", updatedProduct);
+
+    setSelectedProduct(product)
+    setBuyItems([{ ...product, quantity: 1 }])
+    setViewBuyItemModal(true);
+  };
+
+   const paymentFunction = () => {
+    setQr(true)
+  }
+
+
+
+    // Fixed payment confirmation function
+    const paymentConfirm = async () => {
+      try {
+        // Validate required data
+        if (!buyItems || buyItems.length === 0) {
+          toast.error("No items selected for purchase");
+          return;
+        }
+  
+        if (!userSavedAddress) {
+          toast.error("Please add a delivery address first");
+          // navigate("/")
+          return;
+        }
+  
+        const orderData = {
+          payment_method: paymentMethod,
+          delivered_address: {
+            landmark: userSavedAddress.landmark,
+            district: userSavedAddress.district,
+            state: userSavedAddress.state,
+            country: userSavedAddress.country,
+            pincode: userSavedAddress.pincode
+          },
+          product_id: buyItems[0].id,
+          buy_price: buyItems[0].price,
+          quantity: buyItems[0].quantity
+        };
+  
+        // Submit order to API
+        const resp = await axios.post(
+          `${base_url_address}/api/v1/orders/addOrders/${loginUser.id}`,
+          orderData
+        );
+  
+        console.log("Order response:", resp);
+  
+        if (resp.data.success) {
+          toast.success("Order placed successfully!");
+  
+          // Close all modals and reset state
+          setQr(false);
+          setViewBuyItemModal(false);
+          setBuyItems([]);
+          setSelectedProduct(null);
+        } else {
+          toast.error("Failed to place order. Please try again.");
+        }
+  
+      } catch (error) {
+        console.error("Error placing order:", error);
+        toast.error("Failed to place order. Please try again.");
+      }
+    };
+  
 
   const sidebarItems = [
-    { id: 'allProducts', label: 'All Products', icon: '🏠' },
+    { id: 'allProducts', label: 'Products', icon: '🏠' },
     { id: 'shopkeepers', label: 'Shopkeepers', icon: '👥' },
     { id: 'orders', label: 'Orders', icon: '📦' },
-    { id: 'products', label: 'Products', icon: '🛍️' },
+    { id: 'address', label: 'Address', icon: '🛍️' },
     { id: 'analytics', label: 'Analytics', icon: '📊' },
     { id: 'settings', label: 'Settings', icon: '⚙️' }
   ];
@@ -752,6 +866,14 @@ const AdminDashboard = () => {
             </div>
           )}
 
+          {
+            activeTab === "address" && 
+            <UserAddress sidebarItems={sidebarItems} showSection={showSection} loginUser={loginUser} />
+          }
+
+          {
+            activeTab === "orders" &&  <UserOrders loginUser={loginUser}></UserOrders>
+          }
 
         </main>
 
@@ -889,7 +1011,7 @@ const AdminDashboard = () => {
                           {/* Checkout Button */}
                           <button
                             className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-all font-semibold shadow-md mt-4"
-                            // onClick={paymentFunction}
+                            onClick={paymentFunction}
                           >
                             Proceed to Checkout
                           </button>
@@ -901,6 +1023,258 @@ const AdminDashboard = () => {
               )}
         
 
+
+           {/* View Buy Now Modal */}
+              {viewBuyItemModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm z-50">
+                  <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border-t-4 border-green-600">
+        
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-5">
+                      <h2 className="text-2xl font-bold text-green-700">Buy Now </h2>
+                      <button
+                        onClick={() => setViewBuyItemModal(false)}
+                        className="text-red-500 hover:text-red-700 transition text-xl"
+                      >
+                        ✕
+                      </button>
+                    </div>
+        
+                    {/* Items Section */}
+                    <div className="space-y-4">
+                      {buyItems?.length === 0 ? (
+                        <div className="text-center py-8">
+                          <ShoppingCart className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                          <p className="text-gray-500">No items selected</p>
+                        </div>
+                      ) : (
+                        <>
+                          {buyItems?.map(item => (
+        
+        
+                            console.log("buy item ", item),
+        
+                            <div
+                              key={item.id}
+                              className="flex items-center justify-between p-3 border-b border-gray-200"
+                            >
+                              {/* Product Image + Info */}
+                              <div className="flex items-center">
+                                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                                  <img
+                                    src={`${base_url_img}${item?.image_url}`}
+                                    alt={item.name || "Product image"}
+                                    className="max-h-12 object-contain"
+                                  />
+                                </div>
+                                <div>
+                                  <h3 className="font-medium text-gray-800">{item.name}</h3>
+                                  <p className="text-sm text-gray-500">₹ {item.price} × {item.quantity}</p>
+                                </div>
+                              </div>
+        
+                              {/* Quantity Controls + Price */}
+                              <div className="flex items-center">
+                                <div className="flex items-center mr-4">
+                                  <button
+                                    onClick={() => {
+                                      if (item.quantity > 1) {
+                                        setBuyItems(buyItems.map(i =>
+                                          i.id === item.id ? { ...i, quantity: i.quantity - 1 } : i
+                                        ));
+                                      }
+                                    }}
+                                    className="p-1 text-red-500 hover:bg-red-50 rounded-full"
+                                  >
+                                    <Minus className="h-4 w-4" />
+                                  </button>
+                                  <span className="mx-2 font-medium">{item.quantity}</span>
+                                  <button
+                                    onClick={() => {
+                                      setBuyItems(buyItems.map(i =>
+                                        i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+                                      ));
+                                    }}
+                                    className="p-1 text-green-500 hover:bg-green-50 rounded-full"
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </button>
+                                </div>
+        
+                                <div className="text-right mr-2">
+                                  <p className="font-medium text-green-600">
+                                    ₹{item.price * item.quantity}
+                                  </p>
+                                </div>
+        
+                                {/* Delete single item */}
+                                <button
+                                  onClick={() => setBuyItems(buyItems.filter(i => i.id !== item.id))}
+                                  className="p-1 text-red-500 hover:bg-red-50 rounded-full"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+        
+                          {/* Total Section */}
+                          <div className="flex justify-between items-center pt-4">
+                            <span className="text-lg font-semibold">Total:</span>
+                            <span className="text-xl font-bold text-green-600">
+                              ₹{getBuyTotalPrice()}
+                            </span>
+                          </div>
+        
+                          {/* Buttons */}
+                          <div className="flex gap-3 mt-4">
+                            {/* Clear All */}
+                            <button
+                              onClick={() => setBuyItems([])}
+                              className="flex-1 bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-all font-semibold shadow-md"
+                            >
+                              Clear All
+                            </button>
+        
+                            {/* Pay Now */}
+                            <button
+                              onClick={() => {
+                                setViewBuyItemModal(false);
+                                paymentFunction();
+                              }}
+                              className="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-all font-semibold shadow-md"
+                            >
+                              Pay Now
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+        
+        
+                 
+        
+                  </div>
+                </div>
+              )}
+
+ {/* Payment Modal */}
+      {qr && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 border-t-4 border-green-600 transition-transform transform hover:scale-[1.01] duration-300">
+
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                💳 Choose Payment Method
+              </h2>
+              <button
+                onClick={() => setQr(false)}
+                className="text-red-500 hover:text-red-600 text-2xl transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Payment Options */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {/* Google Pay */}
+              <button
+                onClick={() => setPaymentMethod("googlepay")}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${paymentMethod === "googlepay"
+                  ? "border-green-500 bg-green-50 text-green-700"
+                  : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+                  }`}
+              >
+                <FaGooglePay size={28} />
+                <span className="text-xs font-medium mt-1">Google Pay</span>
+              </button>
+
+              {/* PhonePe */}
+              <button
+                onClick={() => setPaymentMethod("phonepe")}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${paymentMethod === "phonepe"
+                  ? "border-green-500 bg-green-50 text-green-700"
+                  : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+                  }`}
+              >
+                <SiPaytm size={28} />
+                <span className="text-xs font-medium mt-1">PhonePe</span>
+              </button>
+
+              {/* Card */}
+              <button
+                onClick={() => setPaymentMethod("card")}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${paymentMethod === "card"
+                  ? "border-green-500 bg-green-50 text-green-700"
+                  : "border-gray-200 hover:bg-green-50/50 hover:text-green-600"
+                  }`}
+              >
+                <SiContactlesspayment size={28} />
+                <span className="text-xs font-medium mt-1">Card</span>
+              </button>
+            </div>
+
+            {/* QR Code for UPI */}
+            {(paymentMethod === "googlepay" || paymentMethod === "phonepe") && (
+              <div className="mt-6 text-center">
+                <p className="mb-3 text-gray-700 font-medium">📱 Scan QR to Pay</p>
+                <div className="inline-block p-3 bg-white border-2 border-green-200 rounded-2xl shadow-md">
+                  <img
+                    src="qr.jpg"
+                    alt="QR Code"
+                    className="w-48 h-48 rounded-lg border border-green-100"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Card Payment Input */}
+            {paymentMethod === "card" && (
+              <div className="mt-6 space-y-4">
+                <input
+                  type="text"
+                  placeholder="Card Number"
+                  className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                />
+                <div className="flex space-x-3">
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    className="w-1/2 border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                  />
+                  <input
+                    type="text"
+                    placeholder="CVV"
+                    className="w-1/2 border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                  />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Card Holder Name"
+                  className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                />
+              </div>
+            )}
+
+            {/* Confirm Button */}
+            <button
+              onClick={paymentConfirm}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-md hover:shadow-green-400/40 mt-6"
+            >
+              ✅ Confirm Payment
+            </button>
+
+            {/* Cancel Button */}
+            <button
+              onClick={() => setQr(false)}
+              className="w-full mt-3 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 px-4 rounded-xl hover:from-red-600 hover:to-red-700 transition-all font-semibold shadow-md hover:shadow-red-400/40"
+            >
+              ❌ Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
 
       </div>

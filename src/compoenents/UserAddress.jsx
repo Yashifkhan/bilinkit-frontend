@@ -305,53 +305,63 @@ const UserAddress = ({ sidebarItems, showSection, loginUser }) => {
                 </>
             )}
 
-            {/* Map Modal */}
-            {openMapModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-xl w-[500px] shadow-lg">
-                        <h3 className="text-xl font-semibold mb-4">Pick your Location</h3>
+           {/* Map Modal */}
+{openMapModal && (
+  <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex items-center justify-center z-50 transition-all duration-300">
+    <div className="relative bg-white/80 backdrop-blur-lg p-6 rounded-2xl w-[500px] shadow-2xl border border-white/30">
 
-                        {/* Map Container */}
-                        <div className="rounded-lg overflow-hidden border">
-                            <MapContainer useMapEvents
-                                center={[29.094303235860714, 75.95325912660536]}
-                                zoom={14}
-                                style={{ height: "300px", width: "100%" }}
+      {/* ❌ Close Button */}
+      <button
+        onClick={() => setOpenMapModal(false)}
+        className="absolute top-3 right-3 text-red-500 hover:text-red-600 bg-white/60 rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200"
+      >
+        ✖
+      </button>
 
-                            >
-                                <MapEventsHandler></MapEventsHandler>
-                                <TileLayer
-                                    attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                />
+      {/* Header */}
+      <h3 className="text-2xl font-semibold mb-5 text-center text-green-700">
+        📍 Pick Your Location
+      </h3>
 
-                                <Marker position={[29.094303235860714, 75.95325912660536]}>
-                                    <Popup>
-                                        Branch Point !
-                                    </Popup>
+      {/* Map Container */}
+      <div className="rounded-xl overflow-hidden border border-green-400 shadow-md">
+        <MapContainer
+          useMapEvents
+          center={[29.094303235860714, 75.95325912660536]}
+          zoom={14}
+          style={{ height: "300px", width: "100%" }}
+        >
+          <MapEventsHandler />
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
 
-                                </Marker>
-                            </MapContainer>
-                        </div>
+          <Marker position={[29.094303235860714, 75.95325912660536]}>
+            <Popup>Branch Point!</Popup>
+          </Marker>
+        </MapContainer>
+      </div>
 
-                        {/* Action buttons */}
-                        <div className="flex justify-end mt-4 gap-3">
-                            <button
-                                onClick={() => setOpenMapModal(false)}
-                                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleMapSelect}
-                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                            >
-                                Confirm Location
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+      {/* Action buttons */}
+      <div className="flex justify-end mt-6 gap-3">
+        <button
+          onClick={() => setOpenMapModal(false)}
+          className="px-5 py-2 rounded-xl font-medium bg-red-500 text-white shadow-md hover:bg-red-600 hover:shadow-lg transition-all duration-200"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleMapSelect}
+          className="px-5 py-2 rounded-xl font-medium bg-green-500 text-white shadow-md hover:bg-green-600 hover:shadow-lg transition-all duration-200"
+        >
+          Confirm Location
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
         </div>
     );
