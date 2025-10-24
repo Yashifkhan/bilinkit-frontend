@@ -133,6 +133,8 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     navigate("/");
     toast.success("Logout Successfully")
+    localStorage.removeItem("role")
+
   };
 
   const fetchAddress = async () => {

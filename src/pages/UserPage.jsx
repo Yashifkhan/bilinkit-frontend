@@ -211,6 +211,8 @@ const UserPage = () => {
   const handleLogout = () => {
     navigate("/");
     toast.success("Logout Successfully")
+    localStorage.removeItem("role")
+
   };
 
   // Add To Cart functions

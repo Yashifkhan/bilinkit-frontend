@@ -179,6 +179,7 @@ const ShopKeeper = () => {
   const handleLogout = () => {
     navigate("/")
     toast.success("Logout Successfully")
+    localStorage.removeItem("role")
 
   };
   useEffect(() => {

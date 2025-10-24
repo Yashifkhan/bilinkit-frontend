@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import AdminDashboard from './pages/AdminDashboard'
 import ShopKeeper from './pages/ShopKeeper'
 import { ToastContainer, toast } from 'react-toastify';
@@ -10,21 +10,25 @@ import Login from './pages/Login';
 // import Home from './pages/Home';
 
 function App() {
+  const [role, setrole] = useState("");
   return (
     <>
       <BrowserRouter>
-      {/* <Home></Home> */}
-     {/* <AdminDashboard></AdminDashboard>  */}
-      <ToastContainer />
-      <Routes>
-        <Route path='' element={<Home></Home>}></Route>
-        <Route path='/userpage' element={<UserPage></UserPage>}/>
-        <Route path='/shopkeeper' element={<ShopKeeper></ShopKeeper>}></Route>
-        <Route path='/AdminDashboard' element={<AdminDashboard></AdminDashboard>}></Route>
-        <Route path='/login' element={<Login></Login>}></Route>
-        
-      </Routes>
+        <Routes>
+          <Route path='/login' element={<Login></Login>}></Route>
+          <Route path='' element={<Home setrole={setrole}></Home>}></Route>
+          {
+            role === "user" && <Route path='/userpage' element={<UserPage/>}/> 
+          }
+          {
+            role === "shopkeeper" && <Route path='/shopkeeper' element={<ShopKeeper/>}/>
+          }
+          {
+            role === "admin" && <Route path='/AdminDashboard' element={<AdminDashboard/>}/>
 
+          }
+        </Routes>
+        <ToastContainer />
       </BrowserRouter>
     </>
   )
