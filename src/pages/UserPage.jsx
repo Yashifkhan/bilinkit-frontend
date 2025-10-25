@@ -15,6 +15,10 @@ const base_url_address = import.meta.env.VITE_BASE_URL
 const base_url_products = import.meta.env.VITE_BASE_URL_PRODUCTS;
 const base_url_img = import.meta.env.VITE_BASE_URL;
 
+
+console.log("base url",base_url_products);
+
+
 const UserPage = () => {
   const location = useLocation();
   const loginUser = location.state?.loginUser;
@@ -45,11 +49,13 @@ const UserPage = () => {
   const [selectedOfferProduct, setSelectedOfferProduct] = useState(null)
   const [quantity, setQuantity] = useState(1);
   const [viewOffersProductModal, setViewOffersProductModal] = useState(false)
+  const [deletItemInCart, setDeletItemInCart] = useState(false)
+
   const itemsPerPage = 4;
 
 
   // console.log("yashif ");
-  
+
 
 
   // ✅ base price & discount
@@ -152,9 +158,13 @@ const UserPage = () => {
 
   const fetchOffersProducts = async () => {
     const resp = await axios.get(`${base_url_products}/getOffersProducts`)
-    console.log("resp of offers api", resp.data.data);
-    setOffersProducts(resp.data.data)
+    // console.log("resp of offers api", resp.data);
+    if (resp?.data?.data?.response?.data?.success){
+      setOffersProducts(resp?.data?.data)
 
+    }else{
+      setOffersProducts([])
+    }
   }
   useEffect(() => {
     fetchOffersProducts()
@@ -167,7 +177,7 @@ const UserPage = () => {
     if (searchTerm.trim().length > 0) {
       result = result.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+      );
     }
     if (selectedCategory !== "All") {
       result = result.filter(product => product.category === selectedCategory);
@@ -185,6 +195,11 @@ const UserPage = () => {
 
     setProducts(result);
   }, [searchTerm, selectedCategory, sortOption, allProduct]);
+
+
+
+
+
 
   const categories = ["All", ...new Set(allProduct?.map(p => p.category) || [])];
 
@@ -257,15 +272,20 @@ const UserPage = () => {
   };
 
   const removeFromCart = async (productId) => {
+    console.log("products id", productId);
+    console.log("delect products item", deletItemInCart);
+
+
     try {
       const resp = await axios.delete(
         // `http://localhost:8000/api/v1/cart/removeFromCart/${loginUser.id}/${productId}`
-        `${base_url_address}/api/v1/cart/removeFromCart/${loginUser.id}/${productId}`
+        `${base_url_address}/api/v1/cart/deletItemFromCart/${productId}/${loginUser.id}/${deletItemInCart}`
       );
       if (resp.data.success) {
         fetchUserCart();
         toast.success("Product removed from cart");
       }
+      fetchUserCart()
     } catch (err) {
       console.error(err);
       toast.error("Failed to remove product from cart");
@@ -621,13 +641,13 @@ const UserPage = () => {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <div className="inline-block bg-gradient-to-br from-red-100 to-pink-100 rounded-full p-4 mb-2">
+                  {/* <div className="inline-block bg-gradient-to-br from-red-100 to-pink-100 rounded-full p-4 mb-2">
                     <Package className="w-12 h-12 text-red-500" />
                   </div>
                   <p className="text-lg font-semibold text-gray-700 mb-1">
                     No Products Available
                   </p>
-                  <p className="text-gray-500 text-sm">Check back soon for exciting offers! 🎉</p>
+                  <p className="text-gray-500 text-sm">Check back soon for exciting offers! 🎉</p> */}
                 </div>
               )}
             </div>
@@ -1144,7 +1164,7 @@ const UserPage = () => {
                           <p className="font-medium text-green-600">₹{item.price * item.quantity}</p>
                         </div>
                         <button
-                          onClick={() => deleteFromCart(item.id)}
+                          onClick={() => { removeFromCart(item.id); setDeletItemInCart(true) }}
                           className="ml-2 p-1 text-red-500 hover:bg-red-50 rounded-full"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -1305,7 +1325,7 @@ const UserPage = () => {
             </div>
 
 
-         
+
 
           </div>
         </div>
@@ -1412,104 +1432,104 @@ const UserPage = () => {
       {/* offers products view  modal  */}
 
 
-   {viewOffersProductModal && selectedOfferProduct && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
-    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border-t-4 border-green-600 overflow-y-auto max-h-[80vh] transition-all duration-300">
-      
-      {/* Header */}
-      <div className="flex justify-between items-center mb-5">
-        <h2 className="text-2xl font-semibold text-green-700">
-          Offer Product Details
-        </h2>
-        <button
-          onClick={() => setViewOffersProductModal(false)}
-          className="text-red-500 hover:text-red-700"
-        >
-          <X size={24} />
-        </button>
-      </div>
+      {viewOffersProductModal && selectedOfferProduct && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border-t-4 border-green-600 overflow-y-auto max-h-[80vh] transition-all duration-300">
 
-      {/* Product Section */}
-      <div className="flex items-center space-x-4 mb-4">
-        <img
-          src={`http://localhost:8000${selectedOfferProduct.productsInfo.image_url}`}
-          alt={selectedOfferProduct.productsInfo.name}
-          className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-sm"
-        />
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 capitalize">
-            {selectedOfferProduct.productsInfo.name}
-          </h3>
-          <p className="text-gray-500 text-sm mt-1">
-            Category:{" "}
-            <span className="font-medium text-gray-700">
-              {selectedOfferProduct.productsInfo.category}
-            </span>
-          </p>
-          <p className="text-gray-500 text-sm">
-            Price:{" "}
-            <span className="font-semibold text-gray-800">
-              ₹{Number(selectedOfferProduct.productsInfo.price)}
-            </span>
-          </p>
+            {/* Header */}
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-2xl font-semibold text-green-700">
+                Offer Product Details
+              </h2>
+              <button
+                onClick={() => setViewOffersProductModal(false)}
+                className="text-red-500 hover:text-red-700"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Product Section */}
+            <div className="flex items-center space-x-4 mb-4">
+              <img
+                src={`http://localhost:8000${selectedOfferProduct.productsInfo.image_url}`}
+                alt={selectedOfferProduct.productsInfo.name}
+                className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-sm"
+              />
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 capitalize">
+                  {selectedOfferProduct.productsInfo.name}
+                </h3>
+                <p className="text-gray-500 text-sm mt-1">
+                  Category:{" "}
+                  <span className="font-medium text-gray-700">
+                    {selectedOfferProduct.productsInfo.category}
+                  </span>
+                </p>
+                <p className="text-gray-500 text-sm">
+                  Price:{" "}
+                  <span className="font-semibold text-gray-800">
+                    ₹{Number(selectedOfferProduct.productsInfo.price)}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            {/* Discount Section */}
+            <div className="bg-green-50 rounded-lg p-3 mb-4 border border-green-200">
+              <p className="text-green-700 font-medium">
+                Discount:{" "}
+                <span className="font-semibold text-green-800">
+                  {Number(selectedOfferProduct.discount)}%
+                </span>
+              </p>
+
+              {/* Calculate discounted price */}
+              <p className="text-gray-700 mt-1">
+                Discounted Price:{" "}
+                <span className="text-green-700 font-bold">
+                  ₹
+                  {(
+                    Number(selectedOfferProduct.productsInfo.price) -
+                    (Number(selectedOfferProduct.productsInfo.price) *
+                      Number(selectedOfferProduct.discount)) /
+                    100
+                  ).toFixed(2)}
+                </span>
+              </p>
+            </div>
+
+            {/* Description */}
+            <div className="mb-4">
+              <h4 className="text-gray-800 font-semibold mb-2">Description:</h4>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                {selectedOfferProduct.productsInfo.description ||
+                  "No description available."}
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setViewOffersProductModal(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition"
+              >
+                Close
+              </button>
+
+              <button
+                onClick={() => {
+                  setViewOffersProductModal(false);
+                  setOffersBuyModal(true); // Open Buy Modal directly from here
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+              >
+                Buy Now
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-
-      {/* Discount Section */}
-      <div className="bg-green-50 rounded-lg p-3 mb-4 border border-green-200">
-        <p className="text-green-700 font-medium">
-          Discount:{" "}
-          <span className="font-semibold text-green-800">
-            {Number(selectedOfferProduct.discount)}%
-          </span>
-        </p>
-
-        {/* Calculate discounted price */}
-        <p className="text-gray-700 mt-1">
-          Discounted Price:{" "}
-          <span className="text-green-700 font-bold">
-            ₹
-            {(
-              Number(selectedOfferProduct.productsInfo.price) -
-              (Number(selectedOfferProduct.productsInfo.price) *
-                Number(selectedOfferProduct.discount)) /
-                100
-            ).toFixed(2)}
-          </span>
-        </p>
-      </div>
-
-      {/* Description */}
-      <div className="mb-4">
-        <h4 className="text-gray-800 font-semibold mb-2">Description:</h4>
-        <p className="text-gray-600 text-sm leading-relaxed">
-          {selectedOfferProduct.productsInfo.description ||
-            "No description available."}
-        </p>
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-end space-x-3 mt-6">
-        <button
-          onClick={() => setViewOffersProductModal(false)}
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition"
-        >
-          Close
-        </button>
-
-        <button
-          onClick={() => {
-            setViewOffersProductModal(false);
-            setOffersBuyModal(true); // Open Buy Modal directly from here
-          }}
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition"
-        >
-          Buy Now
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
 
       {/* Payment Modal */}

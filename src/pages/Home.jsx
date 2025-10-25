@@ -98,7 +98,6 @@ const Home = ({setrole}) => {
         // ✅ Check role
         if (user.role === "user") {
           localStorage.setItem("role","user")
-          setrole("user")
           setLoginModalState(false);
           navigat("/userpage", { state: { loginUser } });
           toast.success("Login Succesfully")
@@ -106,12 +105,10 @@ const Home = ({setrole}) => {
           navigat("/AdminDashboard",{state :{loginUser}});
           toast.success("Login Succesfully")
           localStorage.setItem("role","admin")
-          setrole("admin")
 
 
         } 
         else if(user.role === "shopkeeper") {
-          setrole("shopkeeper")
           
           console.log("Access denied: only users can enter this page");
           toast.success("Login Succesfully")
