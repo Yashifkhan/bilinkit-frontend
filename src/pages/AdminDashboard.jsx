@@ -277,8 +277,6 @@ const AdminDashboard = () => {
   const removeFromCart = async (productId) => {
     console.log("products id",productId);
     console.log("delect products item",deletItemInCart);
-
-    
       try {
         const resp = await axios.delete(
           // `http://localhost:8000/api/v1/cart/removeFromCart/${loginUser.id}/${productId}`

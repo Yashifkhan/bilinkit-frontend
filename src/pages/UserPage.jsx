@@ -158,8 +158,8 @@ const UserPage = () => {
 
   const fetchOffersProducts = async () => {
     const resp = await axios.get(`${base_url_products}/getOffersProducts`)
-    // console.log("resp of offers api", resp.data);
-    if (resp?.data?.data?.response?.data?.success){
+    console.log("resp of offers api", resp.data);
+    if (resp?.data?.success){
       setOffersProducts(resp?.data?.data)
 
     }else{
@@ -274,7 +274,6 @@ const UserPage = () => {
   const removeFromCart = async (productId) => {
     console.log("products id", productId);
     console.log("delect products item", deletItemInCart);
-
 
     try {
       const resp = await axios.delete(
@@ -405,7 +404,7 @@ const UserPage = () => {
               {getCartItemQuantity(selectedProduct?.id) > 0 ? (
                 <div className="flex items-center border border-green-500 rounded-lg flex-1">
                   <button
-                    onClick={() => removeFromCart(selectedProduct.id)}
+                    onClick={() => removeFromCart(selectedProduct?.id)}
                     className="p-2 text-green-600 hover:bg-green-50"
                   >
                     <Minus className="h-4 w-4" />
@@ -1124,6 +1123,8 @@ const UserPage = () => {
               ) : (
                 <>
                   {cartItems?.map(item => (
+                    // console.log("item id",item.id),
+                    
                     <div
                       key={item.id}
                       className="flex items-center justify-between p-3 border-b border-gray-200"
@@ -1147,7 +1148,7 @@ const UserPage = () => {
                       <div className="flex items-center">
                         <div className="flex items-center mr-4">
                           <button
-                            onClick={() => removeFromCart(item.product_id)}
+                            onClick={() => removeFromCart(item.id)}
                             className="p-1 text-red-500 hover:bg-red-50 rounded-full"
                           >
                             <Minus className="h-4 w-4" />

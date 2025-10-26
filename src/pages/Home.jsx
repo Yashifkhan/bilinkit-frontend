@@ -23,10 +23,16 @@ const Home = ({setrole}) => {
 
   // fetch products 
   const fetchProducts = async () => {
-    const resp = await axios.get(`${base_url_products}/getAllProducts`)
+    try {
+      const resp = await axios.get(`${base_url_products}/getAllProducts`)
     console.log("resp of api ", resp.data.data);
     setProducts(resp?.data.data);
     setFilterProducts(resp?.data.data)
+    } catch (error) {
+      console.log(' show error ==>',error);
+      
+    }
+    
   }
   useEffect(() => {
     fetchProducts()
@@ -42,6 +48,7 @@ const Home = ({setrole}) => {
     // const resp = await axios.post("http://localhost:8000/api/v1/users/registerUser", registerFormData)
     const resp = await axios.post(`${base_url_users}/registerUser`, registerFormData)
     const result = resp.data.success
+    // succes === true
     if (result) {
       setRegisterModalState(false)
       setLoginModalState(true)
