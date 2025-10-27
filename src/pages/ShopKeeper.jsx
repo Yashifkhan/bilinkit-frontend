@@ -174,7 +174,6 @@ const ShopKeeper = () => {
     checkUserStatus();
   }, []);
 
-
   // Handle logout
   const handleLogout = () => {
     navigate("/")
@@ -189,6 +188,7 @@ const ShopKeeper = () => {
   }, [])
 
   // Handle add product
+
 
   // Handle delete product
   const handleDeleteProduct = (productId) => {
@@ -266,11 +266,12 @@ const ShopKeeper = () => {
           if (image_url) {
             formData.append('image', image_url);
           }
+          console.log("formData",formData);
+          
 
           const resp = await axios.post(
             // "http://localhost:8000/api/v1/products/addProduct",
             `${base_url_products}/addProduct`,
-
             formData,
             {
               headers: {
@@ -278,7 +279,7 @@ const ShopKeeper = () => {
               },
             }
           );
-          console.log("resp of edit product", resp.data);
+          console.log("resp of add product", resp.data);
 
 
           if (resp.data.success) {
@@ -587,7 +588,7 @@ const ShopKeeper = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Product Details</h2>
+            <h2 className="text-2xl font-bold text-gray-800">Product Details </h2>
             <button
               onClick={() => setShowProductDetails(false)}
               className="text-gray-500 hover:text-gray-700 text-xl transition-colors"
@@ -598,13 +599,19 @@ const ShopKeeper = () => {
 
           <div className="space-y-4">
             <div className="flex justify-center">
-              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 w-48 h-48 flex items-center justify-center overflow-hidden">
-                <img
-                  src={`http://localhost:8000${selectedProduct?.image_url}`}
-                  alt={selectedProduct.name || "Product image"}
-                  className="max-w-full max-h-full object-contain"
-                />
-              </div>
+           <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 w-48 h-48 flex items-center justify-center overflow-hidden">
+  <img
+    src={
+      selectedProduct?.image_url?.startsWith("http")
+        ? selectedProduct.image_url                // Cloudinary image
+        : `http://localhost:8000${selectedProduct.image_url}` // Local image
+    }
+    alt={selectedProduct.name || "Product image"}
+    className="max-w-full max-h-full object-contain"
+    onError={(e) => (e.target.src = "/fallback.png")} // Optional: default image
+  />
+</div>
+
             </div>
 
             <div>
@@ -821,11 +828,19 @@ const ShopKeeper = () => {
                           <div className="p-4">
                             {/* Product Image */}
                             <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
-                              <img
-                                src={`http://localhost:8000${product.image_url}`}
-                                alt={product.name}
-                                className="max-h-28 object-contain group-hover:scale-110 transition-transform duration-300"
-                              />
+                            <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 w-48 h-48 flex items-center justify-center overflow-hidden">
+  <img
+    src={
+      product?.image_url?.startsWith("http")
+        ? product.image_url                // Cloudinary image
+        : `http://localhost:8000${product.image_url}` // Local image
+    }
+    alt={product.name || "Product image"}
+    className="max-w-full max-h-full object-contain"
+    onError={(e) => (e.target.src = "/fallback.png")} // Optional: default image
+  />
+</div>
+
 
                               {/* Quick View Button */}
                               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration">
@@ -1104,11 +1119,16 @@ const ShopKeeper = () => {
                           <td className="py-2">
                             <div className="flex justify-center items-center">
                               <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-2 w-[80px] h-[80px] flex items-center justify-center overflow-hidden group">
-                                <img
-                                  src={`http://localhost:8000${product?.image_url}`}
-                                  alt={product?.name || "Product image"}
-                                  className="max-w-[80px] max-h-[80px] object-contain group-hover:scale-110 transition-transform duration-300"
-                                />
+                               <img
+    src={
+      product?.image_url?.startsWith("http")
+        ? product.image_url                // Cloudinary image
+        : `http://localhost:8000${product.image_url}` // Local image
+    }
+    alt={product.name || "Product image"}
+    className="max-w-full max-h-full object-contain"
+    onError={(e) => (e.target.src = "/fallback.png")} // Optional: default image
+  />
                               </div>
                             </div>
                           </td>
@@ -1141,8 +1161,8 @@ const ShopKeeper = () => {
                                 onClick={() => handleToggle(product)}
                                 disabled={loading}
                                 className={`px-3 py-1 rounded text-white text-sm font-medium ${product?.status === 1
-                                    ? "bg-green-500 hover:bg-green-600"
-                                    : "bg-gray-500 hover:bg-gray-600"
+                                  ? "bg-green-500 hover:bg-green-600"
+                                  : "bg-gray-500 hover:bg-gray-600"
                                   } transition-colors`}
                               >
                                 {loading
