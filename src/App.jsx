@@ -16,10 +16,8 @@ function App() {
           {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-
           {/* Private (protected) routes */}
           <Route path="/*" element={<PrivateRouting />} />
-         
         </Routes>
         <ToastContainer />
       </BrowserRouter>
