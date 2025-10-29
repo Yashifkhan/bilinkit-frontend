@@ -659,28 +659,22 @@ const ShopKeeper = () => {
     { id: 'orders', label: 'Orders', icon: '📋' },
     { id: 'analytics', label: 'Analytics', icon: '📊' },
     { id: 'profile', label: 'Profile', icon: '👤' },
-    // { id: 'products', label: 'All Products', icon: '🛍️' },
     { id: 'about', label: 'About', icon: 'ℹ️' }
   ];
-  // Get unique categories for filter
+
   const categories = ["All", ...new Set(allProduct?.map(p => p.category) || [])];
 
   const handleApplyOffer = async () => {
     const ProductsId = selectProductsForOffer.map((product) => product.id);
-
-    const offerData = {
-      ProductsId,
-      discount,
-      offersDate,
-      shopkeeper_id: loginUser.id
-    };
-
-    const resp = await axios.post(`${base_url_products}/addOfferProducts`, offerData)
-    console.log("resp of add offer api ", resp.data);
-
-    setOfferModalOpen(false)
-    fetchProducts()
-
+    const offerData = { ProductsId, discount, offersDate, shopkeeper_id: loginUser.id  };
+    try {
+      const resp = await axios.post(`${base_url_products}/addOfferProducts`, offerData)
+      console.log("resp of add offer api ", resp.data);
+      setOfferModalOpen(false)
+      fetchProducts()
+    } catch (error) {
+      console.log("error",error);
+    }
   };
 
 
@@ -1215,9 +1209,6 @@ const ShopKeeper = () => {
 
             </div>
           }
-
-
-
 
           {/* orders  */}
           {showSection.id === "orders" &&
