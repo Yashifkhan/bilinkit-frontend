@@ -16,7 +16,7 @@ const base_url_products = import.meta.env.VITE_BASE_URL_PRODUCTS;
 const base_url_img = import.meta.env.VITE_BASE_URL;
 
 
-console.log("base url",base_url_products);
+console.log("base url", base_url_products);
 
 
 const UserPage = () => {
@@ -159,10 +159,10 @@ const UserPage = () => {
   const fetchOffersProducts = async () => {
     const resp = await axios.get(`${base_url_products}/getOffersProducts`)
     console.log("resp of offers api", resp.data);
-    if (resp?.data?.success){
+    if (resp?.data?.success) {
       setOffersProducts(resp?.data?.data)
 
-    }else{
+    } else {
       setOffersProducts([])
     }
   }
@@ -260,6 +260,8 @@ const UserPage = () => {
 
   // Buy Now Function 
   const buyNow = (product, discountedPrice) => {
+    console.log("selected products", product);
+
     const updatedProduct = {
       ...product, price: discountedPrice ? discountedPrice : product.price,
     };
@@ -464,8 +466,11 @@ const UserPage = () => {
   const offerProductdBuy = (p, discountedPrice) => {
     setOffersBuyModal(true)
     console.log("p--->>>", p, discountedPrice);
-    setSelectedOfferProduct(p)
+    const updatedP = p.price = discountedPrice
+    console.log("updated pro", p);
 
+    setBuyItems({p, quantity:1 })
+    setSelectedOfferProduct(p)
     console.log("am enter in buy offerducts ection ");
 
   }
@@ -819,6 +824,8 @@ const UserPage = () => {
 
   // Fixed payment confirmation function
   const paymentConfirm = async () => {
+    console.log("buyItems", buyItems);
+
     try {
       // Validate required data
       if (!buyItems || buyItems.length === 0) {
@@ -840,9 +847,10 @@ const UserPage = () => {
           country: userSavedAddress.country,
           pincode: userSavedAddress.pincode
         },
-        product_id: buyItems[0].id,
-        buy_price: buyItems[0].price,
-        quantity: buyItems[0].quantity
+        product_id: buyItems[0]?.id || buyItems?.p?.product_id,
+
+        buy_price: buyItems[0]?.price || buyItems?.p.price,
+        quantity: buyItems[0]?.quantity || buyItems?.quantity
       };
 
       // Submit order to API
@@ -1124,7 +1132,7 @@ const UserPage = () => {
                 <>
                   {cartItems?.map(item => (
                     // console.log("item id",item.id),
-                    
+
                     <div
                       key={item.id}
                       className="flex items-center justify-between p-3 border-b border-gray-200"
@@ -1419,7 +1427,7 @@ const UserPage = () => {
                 Clear All
               </button>
               <button
-                onClick={() => console.log("Pay Now", { product: selectedOfferProduct, quantity, total })}
+                onClick={() => { setQr(true) }}
                 className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
               >
                 Pay Now
