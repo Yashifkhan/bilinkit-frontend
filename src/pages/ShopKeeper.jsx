@@ -669,9 +669,16 @@ const ShopKeeper = () => {
     const offerData = { ProductsId, discount, offersDate, shopkeeper_id: loginUser.id  };
     try {
       const resp = await axios.post(`${base_url_products}/addOfferProducts`, offerData)
-      console.log("resp of add offer api ", resp.data);
-      setOfferModalOpen(false)
+      console.log("resp of add offer api ", resp.data.success);
+     if(resp.data.success){
+      console.log("am enter inside the if block");
+      
+       setOfferModalOpen(false)
       fetchProducts()
+      setSelectProductsForOffer([])
+      setCheckBoxModal(false)
+      toast.success("Offer applyed Succesfully")
+     }
     } catch (error) {
       console.log("error",error);
     }
