@@ -898,18 +898,6 @@ const UserPage = () => {
       toast.error("Failed to place order. Please try again.");
     }
   };
-
-
-
-  // console.log(userSavedAddress);
-
-
-  // console.log("userOrders",userOrders);
-
-
-  console.log("viewOffersProductModal", viewOffersProductModal);
-
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -1361,121 +1349,121 @@ const UserPage = () => {
       )}
 
 
-     {/* ✅ Buy Offers Products Modal */}
-{offersBuyModal && selectedOfferProduct && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
-    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border-t-4 border-green-600 overflow-y-auto max-h-[85vh] transition-transform duration-300 scale-100">
+      {/* ✅ Buy Offers Products Modal */}
+      {offersBuyModal && selectedOfferProduct && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border-t-4 border-green-600 overflow-y-auto max-h-[85vh] transition-transform duration-300 scale-100">
 
-      {/* Header */}
-      <div className="flex justify-between items-center mb-5">
-        <h2 className="text-2xl font-semibold text-green-700">
-          🛒 Buy Offer Product
-        </h2>
-        <button
-          onClick={() => setOffersBuyModal(false)}
-          className="text-gray-500 hover:text-red-600 transition"
-        >
-          <X size={26} />
-        </button>
-      </div>
+            {/* Header */}
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-2xl font-semibold text-green-700">
+                🛒 Buy Offer Product
+              </h2>
+              <button
+                onClick={() => setOffersBuyModal(false)}
+                className="text-gray-500 hover:text-red-600 transition"
+              >
+                <X size={26} />
+              </button>
+            </div>
 
-      {/* Product Info Section */}
-      <div className="flex items-center gap-4 border-b border-gray-200 pb-4 mb-5">
-        {/* Product Image */}
-        <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-3 w-28 h-28 flex items-center justify-center overflow-hidden shadow-inner">
-          <img
-            src={
-              selectedOfferProduct?.productInfo?.image_url?.startsWith("http")
-                ? selectedOfferProduct?.productInfo.image_url
-                : `http://localhost:8000${selectedOfferProduct.productInfo.image_url}`
-            }
-            alt={selectedOfferProduct.productInfo?.name || "Product image"}
-            className="max-w-full max-h-full object-contain"
-          />
-        </div>
+            {/* Product Info Section */}
+            <div className="flex items-center gap-4 border-b border-gray-200 pb-4 mb-5">
+              {/* Product Image */}
+              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-3 w-28 h-28 flex items-center justify-center overflow-hidden shadow-inner">
+                <img
+                  src={
+                    selectedOfferProduct?.productInfo?.image_url?.startsWith("http")
+                      ? selectedOfferProduct?.productInfo.image_url
+                      : `http://localhost:8000${selectedOfferProduct.productInfo.image_url}`
+                  }
+                  alt={selectedOfferProduct.productInfo?.name || "Product image"}
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
 
-        {/* Product Details */}
-        <div className="flex flex-col flex-1">
-          <h3 className="text-lg font-semibold text-gray-800 capitalize">
-            {selectedOfferProduct.productInfo.name}
-          </h3>
+              {/* Product Details */}
+              <div className="flex flex-col flex-1">
+                <h3 className="text-lg font-semibold text-gray-800 capitalize">
+                  {selectedOfferProduct.productInfo.name}
+                </h3>
 
-          <p className="text-gray-500 text-sm">
-            {selectedOfferProduct.productInfo.description || "No description available"}
-          </p>
+                <p className="text-gray-500 text-sm">
+                  {selectedOfferProduct.productInfo.description || "No description available"}
+                </p>
 
-          <div className="mt-2 flex items-center gap-2">
-            <p className="text-gray-600 line-through text-sm">
-              ₹{selectedOfferProduct.actual_price}
-            </p>
-            <p className="text-green-600 font-semibold text-lg">
-              ₹{selectedOfferProduct.offer_price}
-            </p>
-            {selectedOfferProduct.discount > 0 && (
-              <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">
-                -{selectedOfferProduct.discount}%
-              </span>
-            )}
+                <div className="mt-2 flex items-center gap-2">
+                  <p className="text-gray-600 line-through text-sm">
+                    ₹{selectedOfferProduct.actual_price}
+                  </p>
+                  <p className="text-green-600 font-semibold text-lg">
+                    ₹{selectedOfferProduct.offer_price}
+                  </p>
+                  {selectedOfferProduct.discount > 0 && (
+                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                      -{selectedOfferProduct.discount}%
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quantity Controls */}
+            <div className="flex justify-between items-center mb-5">
+              <div className="flex items-center gap-4">
+                <button
+                  className="p-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 transition"
+                  onClick={handleDecrease}
+                >
+                  <Minus size={18} />
+                </button>
+
+                <span className="text-lg font-semibold text-gray-800">{quantity}</span>
+
+                <button
+                  className="p-2 rounded-full bg-green-50 hover:bg-green-100 text-green-600 transition"
+                  onClick={handleIncrease}
+                >
+                  <Plus size={18} />
+                </button>
+              </div>
+
+              {/* Remove product button */}
+              <button
+                className="p-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 transition"
+                onClick={handleRemove}
+              >
+                <Trash2 size={18} />
+              </button>
+            </div>
+
+            {/* Total Section */}
+            <div className="flex justify-between items-center border-t border-gray-200 pt-4">
+              <p className="text-xl font-semibold text-gray-800">Total:</p>
+              <p className="text-2xl font-bold text-green-700">
+                ₹{(selectedOfferProduct.offer_price * quantity).toFixed(2)}
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-between mt-6">
+              <button
+                onClick={() => setQuantity(1)}
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+              >
+                Clear All
+              </button>
+
+              <button
+                onClick={() => { setQr(true); buyNow(selectedOfferProduct) }}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+              >
+                Pay Now
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Quantity Controls */}
-      <div className="flex justify-between items-center mb-5">
-        <div className="flex items-center gap-4">
-          <button
-            className="p-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 transition"
-            onClick={handleDecrease}
-          >
-            <Minus size={18} />
-          </button>
-
-          <span className="text-lg font-semibold text-gray-800">{quantity}</span>
-
-          <button
-            className="p-2 rounded-full bg-green-50 hover:bg-green-100 text-green-600 transition"
-            onClick={handleIncrease}
-          >
-            <Plus size={18} />
-          </button>
-        </div>
-
-        {/* Remove product button */}
-        <button
-          className="p-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 transition"
-          onClick={handleRemove}
-        >
-          <Trash2 size={18} />
-        </button>
-      </div>
-
-      {/* Total Section */}
-      <div className="flex justify-between items-center border-t border-gray-200 pt-4">
-        <p className="text-xl font-semibold text-gray-800">Total:</p>
-        <p className="text-2xl font-bold text-green-700">
-          ₹{(selectedOfferProduct.offer_price * quantity).toFixed(2)}
-        </p>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex justify-between mt-6">
-        <button
-          onClick={() => setQuantity(1)}
-          className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition"
-        >
-          Clear All
-        </button>
-
-        <button
-          onClick={() => {setQr(true);buyNow(selectedOfferProduct)}}
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
-        >
-          Pay Now
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
 
 
