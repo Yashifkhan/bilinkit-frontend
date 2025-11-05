@@ -872,6 +872,7 @@ const UserPage = () => {
         quantity: buyItems[0]?.quantity || buyItems?.quantity
       };
 
+      
       // Submit order to API
       const resp = await axios.post(
         `${base_url_address}/api/v1/orders/addOrders/${loginUser.id}`,
@@ -1688,15 +1689,8 @@ const UserPage = () => {
         </div>
       )}
 
-
-
-
-
       {/* Product Details Modal */}
       {showProductDetails && <ProductDetailsModal />}
-
-
-
     </div>
   );
 };

@@ -266,8 +266,8 @@ const ShopKeeper = () => {
           if (image_url) {
             formData.append('image', image_url);
           }
-          console.log("formData",formData);
-          
+          console.log("formData", formData);
+
 
           const resp = await axios.post(
             // "http://localhost:8000/api/v1/products/addProduct",
@@ -599,18 +599,18 @@ const ShopKeeper = () => {
 
           <div className="space-y-4">
             <div className="flex justify-center">
-           <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 w-48 h-48 flex items-center justify-center overflow-hidden">
-  <img
-    src={
-      selectedProduct?.image_url?.startsWith("http")
-        ? selectedProduct.image_url                // Cloudinary image
-        : `http://localhost:8000${selectedProduct.image_url}` // Local image
-    }
-    alt={selectedProduct.name || "Product image"}
-    className="max-w-full max-h-full object-contain"
-    onError={(e) => (e.target.src = "/fallback.png")} // Optional: default image
-  />
-</div>
+              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 w-48 h-48 flex items-center justify-center overflow-hidden">
+                <img
+                  src={
+                    selectedProduct?.image_url?.startsWith("http")
+                      ? selectedProduct.image_url                // Cloudinary image
+                      : `http://localhost:8000${selectedProduct.image_url}` // Local image
+                  }
+                  alt={selectedProduct.name || "Product image"}
+                  className="max-w-full max-h-full object-contain"
+                  onError={(e) => (e.target.src = "/fallback.png")} // Optional: default image
+                />
+              </div>
 
             </div>
 
@@ -666,21 +666,21 @@ const ShopKeeper = () => {
 
   const handleApplyOffer = async () => {
     const ProductsId = selectProductsForOffer.map((product) => product.id);
-    const offerData = { ProductsId, discount, offersDate, shopkeeper_id: loginUser.id  };
+    const offerData = { ProductsId, discount, offersDate, shopkeeper_id: loginUser.id };
     try {
       const resp = await axios.post(`${base_url_products}/addOfferProducts`, offerData)
       console.log("resp of add offer api ", resp.data.success);
-     if(resp.data.success){
-      console.log("am enter inside the if block");
-      
-       setOfferModalOpen(false)
-      fetchProducts()
-      setSelectProductsForOffer([])
-      setCheckBoxModal(false)
-      toast.success("Offer applyed Succesfully")
-     }
+      if (resp.data.success) {
+        console.log("am enter inside the if block");
+
+        setOfferModalOpen(false)
+        fetchProducts()
+        setSelectProductsForOffer([])
+        setCheckBoxModal(false)
+        toast.success("Offer applyed Succesfully")
+      }
     } catch (error) {
-      console.log("error",error);
+      console.log("error", error);
     }
   };
 
@@ -829,18 +829,18 @@ const ShopKeeper = () => {
                           <div className="p-4">
                             {/* Product Image */}
                             <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
-                            <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 w-48 h-48 flex items-center justify-center overflow-hidden">
-  <img
-    src={
-      product?.image_url?.startsWith("http")
-        ? product.image_url                // Cloudinary image
-        : `http://localhost:8000${product.image_url}` // Local image
-    }
-    alt={product.name || "Product image"}
-    className="max-w-full max-h-full object-contain"
-    onError={(e) => (e.target.src = "/fallback.png")} // Optional: default image
-  />
-</div>
+                              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 w-48 h-48 flex items-center justify-center overflow-hidden">
+                                <img
+                                  src={
+                                    product?.image_url?.startsWith("http")
+                                      ? product.image_url                // Cloudinary image
+                                      : `http://localhost:8000${product.image_url}` // Local image
+                                  }
+                                  alt={product.name || "Product image"}
+                                  className="max-w-full max-h-full object-contain"
+                                  onError={(e) => (e.target.src = "/fallback.png")} // Optional: default image
+                                />
+                              </div>
 
 
                               {/* Quick View Button */}
@@ -1120,16 +1120,16 @@ const ShopKeeper = () => {
                           <td className="py-2">
                             <div className="flex justify-center items-center">
                               <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-2 w-[80px] h-[80px] flex items-center justify-center overflow-hidden group">
-                               <img
-    src={
-      product?.image_url?.startsWith("http")
-        ? product.image_url                // Cloudinary image
-        : `http://localhost:8000${product.image_url}` // Local image
-    }
-    alt={product.name || "Product image"}
-    className="max-w-full max-h-full object-contain"
-    onError={(e) => (e.target.src = "/fallback.png")} // Optional: default image
-  />
+                                <img
+                                  src={
+                                    product?.image_url?.startsWith("http")
+                                      ? product.image_url                // Cloudinary image
+                                      : `http://localhost:8000${product.image_url}` // Local image
+                                  }
+                                  alt={product.name || "Product image"}
+                                  className="max-w-full max-h-full object-contain"
+                                  onError={(e) => (e.target.src = "/fallback.png")} // Optional: default image
+                                />
                               </div>
                             </div>
                           </td>
